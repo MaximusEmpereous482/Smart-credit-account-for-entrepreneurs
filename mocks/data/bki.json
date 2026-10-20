@@ -1,0 +1,57 @@
+{
+  "7701234567": {
+    "subject": { "inn": "7701234567", "entity_type": "LEGAL_ENTITY" },
+    "consent": { "granted": true, "consent_id": "CNT-2026-000123" },
+    "score": { "value": 742, "band": "LOW_RISK" },
+    "active_obligations": [
+      { "creditor": "ПАО Банк А", "type": "CREDIT_LINE", "limit": 5000000, "outstanding": 2100000, "monthly_payment": 180000, "status": "CURRENT" },
+      { "creditor": "ПАО Банк Б", "type": "LEASING", "limit": 3200000, "outstanding": 1450000, "monthly_payment": 130000, "status": "CURRENT" }
+    ],
+    "delinquency": { "max_overdue_days": 0, "count_60_plus": 0, "count_90_plus": 0 },
+    "total_outstanding": 3550000,
+    "total_monthly_payment": 310000,
+    "inquiries_last_30d": 1
+  },
+  "7812345678": {
+    "subject": { "inn": "7812345678", "entity_type": "LEGAL_ENTITY" },
+    "consent": { "granted": true, "consent_id": "CNT-2026-000124" },
+    "score": null,
+    "active_obligations": [],
+    "delinquency": { "max_overdue_days": 0, "count_60_plus": 0, "count_90_plus": 0 },
+    "total_outstanding": 0,
+    "total_monthly_payment": 0,
+    "inquiries_last_30d": 3
+  },
+  "504712345678": {
+    "subject": { "inn": "504712345678", "entity_type": "INDIVIDUAL_ENTREPRENEUR" },
+    "consent": { "granted": true, "consent_id": "CNT-2026-000125" },
+    "score": { "value": 415, "band": "HIGH_RISK" },
+    "active_obligations": [
+      { "creditor": "ПАО Банк Б", "type": "LOAN", "limit": 3000000, "outstanding": 2400000, "monthly_payment": 180000, "status": "CURRENT" }
+    ],
+    "delinquency": { "max_overdue_days": 78, "count_60_plus": 2, "count_90_plus": 0 },
+    "total_outstanding": 2400000,
+    "total_monthly_payment": 180000,
+    "inquiries_last_30d": 4
+  },
+  "7709876543": {
+    "subject": { "inn": "7709876543", "entity_type": "LEGAL_ENTITY" },
+    "consent": { "granted": false, "consent_id": null },
+    "score": null,
+    "active_obligations": [],
+    "delinquency": { "max_overdue_days": 0, "count_60_plus": 0, "count_90_plus": 0 },
+    "total_outstanding": 0,
+    "total_monthly_payment": 0,
+    "inquiries_last_30d": 0
+  },
+  "7723456789": {
+    "subject": { "inn": "7723456789", "entity_type": "LEGAL_ENTITY" },
+    "consent": { "granted": true, "consent_id": "CNT-2026-000126" },
+    "score": { "value": 690, "band": "MEDIUM_RISK" },
+    "active_obligations": [],
+    "delinquency": { "max_overdue_days": 0, "count_60_plus": 0, "count_90_plus": 0 },
+    "total_outstanding": 0,
+    "total_monthly_payment": 0,
+    "inquiries_last_30d": 1
+  }
+}

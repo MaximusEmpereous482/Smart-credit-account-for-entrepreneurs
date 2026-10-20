@@ -1,0 +1,77 @@
+{
+  "7701234567": {
+    "inn": "7701234567",
+    "ogrn": "1157746000000",
+    "entity_type": "LEGAL_ENTITY",
+    "short_name": "ООО «Ромашка»",
+    "status": "ACTIVE",
+    "registration_date": "2015-03-12",
+    "age_months": 136,
+    "okved_main": { "code": "46.90", "name": "Торговля оптовая неспециализированная" },
+    "management": [
+      { "role": "GENERAL_DIRECTOR", "full_name": "Иванов Иван Иванович", "inn": "770123456789", "since": "2015-03-12", "disqualified": false }
+    ],
+    "has_unreliable_records": false,
+    "bankruptcy_case": null
+  },
+  "7812345678": {
+    "inn": "7812345678",
+    "ogrn": "1257800000000",
+    "entity_type": "LEGAL_ENTITY",
+    "short_name": "ООО «ТехноСтарт»",
+    "status": "ACTIVE",
+    "registration_date": "2025-11-20",
+    "age_months": 8,
+    "okved_main": { "code": "62.01", "name": "Разработка компьютерного ПО" },
+    "management": [
+      { "role": "GENERAL_DIRECTOR", "full_name": "Петрова Анна Сергеевна", "inn": "781234567890", "since": "2025-11-20", "disqualified": false }
+    ],
+    "has_unreliable_records": false,
+    "bankruptcy_case": null
+  },
+  "504712345678": {
+    "inn": "504712345678",
+    "ogrn": "315504700000000",
+    "entity_type": "INDIVIDUAL_ENTREPRENEUR",
+    "short_name": "ИП Петров А.С.",
+    "status": "ACTIVE",
+    "registration_date": "2015-06-01",
+    "age_months": 133,
+    "okved_main": { "code": "49.41", "name": "Деятельность автомобильного грузового транспорта" },
+    "management": [
+      { "role": "ENTREPRENEUR", "full_name": "Петров Алексей Сергеевич", "inn": "504712345678", "since": "2015-06-01", "disqualified": false }
+    ],
+    "has_unreliable_records": false,
+    "bankruptcy_case": null
+  },
+  "7709876543": {
+    "inn": "7709876543",
+    "ogrn": "1157746000001",
+    "entity_type": "LEGAL_ENTITY",
+    "short_name": "ООО «СтройГрад»",
+    "status": "IN_LIQUIDATION",
+    "registration_date": "2016-08-15",
+    "age_months": 119,
+    "okved_main": { "code": "41.20", "name": "Строительство жилых и нежилых зданий" },
+    "management": [
+      { "role": "GENERAL_DIRECTOR", "full_name": "Сидоров Пётр Петрович", "inn": "770987654321", "since": "2025-01-15", "disqualified": true }
+    ],
+    "has_unreliable_records": true,
+    "bankruptcy_case": null
+  },
+  "7723456789": {
+    "inn": "7723456789",
+    "ogrn": "1207700000002",
+    "entity_type": "LEGAL_ENTITY",
+    "short_name": "ООО «Лютик»",
+    "status": "ACTIVE",
+    "registration_date": "2020-02-01",
+    "age_months": 77,
+    "okved_main": { "code": "64.19", "name": "Денежное посредничество прочее" },
+    "management": [
+      { "role": "GENERAL_DIRECTOR", "full_name": "Козлов Дмитрий Олегович", "inn": "772345678901", "since": "2020-02-01", "disqualified": false }
+    ],
+    "has_unreliable_records": false,
+    "bankruptcy_case": null
+  }
+}

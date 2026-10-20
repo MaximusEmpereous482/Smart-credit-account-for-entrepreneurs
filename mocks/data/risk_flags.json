@@ -1,0 +1,63 @@
+{
+  "7701234567": {
+    "inn": "7701234567",
+    "sources": {
+      "arbitration_cases": { "as_defendant": 0, "as_plaintiff": 2 },
+      "fssp": { "open_proceedings": 0, "total_amount": 0 },
+      "efrsb": { "bankruptcy_messages": 0 },
+      "disqualification": { "found": false }
+    },
+    "flags": [],
+    "verdict": "CLEAN"
+  },
+  "7812345678": {
+    "inn": "7812345678",
+    "sources": {
+      "arbitration_cases": { "as_defendant": 0, "as_plaintiff": 0 },
+      "fssp": { "open_proceedings": 0, "total_amount": 0 },
+      "efrsb": { "bankruptcy_messages": 0 },
+      "disqualification": { "found": false }
+    },
+    "flags": [],
+    "verdict": "CLEAN"
+  },
+  "504712345678": {
+    "inn": "504712345678",
+    "sources": {
+      "arbitration_cases": { "as_defendant": 1, "as_plaintiff": 0 },
+      "fssp": { "open_proceedings": 1, "total_amount": 85000 },
+      "efrsb": { "bankruptcy_messages": 0 },
+      "disqualification": { "found": false }
+    },
+    "flags": [
+      { "code": "ARBITRATION_DEFENDANT", "severity": "MEDIUM", "description": "1 дело в качестве ответчика", "source": "arbitration_cases" },
+      { "code": "FSSP_PROCEDURE", "severity": "MEDIUM", "description": "Открыто исполнительное производство на 85 000 ₽", "source": "fssp" }
+    ],
+    "verdict": "REVIEW_REQUIRED"
+  },
+  "7709876543": {
+    "inn": "7709876543",
+    "sources": {
+      "arbitration_cases": { "as_defendant": 5, "as_plaintiff": 0 },
+      "fssp": { "open_proceedings": 3, "total_amount": 4200000 },
+      "efrsb": { "bankruptcy_messages": 2 },
+      "disqualification": { "found": true }
+    },
+    "flags": [
+      { "code": "BANKRUPTCY", "severity": "HIGH", "description": "Сообщения в ЕФРСБ", "source": "efrsb" },
+      { "code": "DISQUALIFIED_DIRECTOR", "severity": "HIGH", "description": "Дисквалификация руководителя", "source": "disqualification" }
+    ],
+    "verdict": "HIGH_RISK"
+  },
+  "7723456789": {
+    "inn": "7723456789",
+    "sources": {
+      "arbitration_cases": { "as_defendant": 0, "as_plaintiff": 0 },
+      "fssp": { "open_proceedings": 0, "total_amount": 0 },
+      "efrsb": { "bankruptcy_messages": 0 },
+      "disqualification": { "found": false }
+    },
+    "flags": [],
+    "verdict": "CLEAN"
+  }
+}
