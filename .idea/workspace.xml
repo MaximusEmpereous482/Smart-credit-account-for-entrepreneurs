@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8171917f-2810-4334-8521-a4e8dd179252" name="Changes" comment="mocks">
-      <change afterPath="$PROJECT_DIR$/orchestrator/app/core/pipeline.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Smart-credit-account-for-entrepreneurs.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Smart-credit-account-for-entrepreneurs.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="8171917f-2810-4334-8521-a4e8dd179252" name="Changes" comment="mocks" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
