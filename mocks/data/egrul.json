@@ -1,77 +1,92 @@
 {
-  "7701234567": {
-    "inn": "7701234567",
-    "ogrn": "1157746000000",
+  "7707083893": {
+    "inn": "7707083893",
+    "ogrn": "1027700132195",
     "entity_type": "LEGAL_ENTITY",
     "short_name": "ООО «Ромашка»",
     "status": "ACTIVE",
-    "registration_date": "2015-03-12",
-    "age_months": 136,
+    "registration_date": "2002-08-08",
+    "age_months": 288,
     "okved_main": { "code": "46.90", "name": "Торговля оптовая неспециализированная" },
     "management": [
-      { "role": "GENERAL_DIRECTOR", "full_name": "Иванов Иван Иванович", "inn": "770123456789", "since": "2015-03-12", "disqualified": false }
+      { "role": "GENERAL_DIRECTOR", "full_name": "Иванов Иван Иванович", "inn": "770000000001", "since": "2007-01-01", "disqualified": false }
+    ],
+    "founders": [
+      { "full_name": "Иванов Иван Иванович", "inn": "770000000001", "share_percent": 100 }
     ],
     "has_unreliable_records": false,
     "bankruptcy_case": null
   },
-  "7812345678": {
-    "inn": "7812345678",
-    "ogrn": "1257800000000",
+  "7736207543": {
+    "inn": "7736207543",
+    "ogrn": "1027700000000",
+    "entity_type": "LEGAL_ENTITY",
+    "short_name": "ООО «Вектор»",
+    "status": "ACTIVE",
+    "registration_date": "2010-11-20",
+    "age_months": 180,
+    "okved_main": { "code": "62.01", "name": "Разработка компьютерного ПО" },
+    "management": [
+      { "role": "GENERAL_DIRECTOR", "full_name": "Петров Петр Петрович", "inn": "770000000002", "since": "2010-01-01", "disqualified": false }
+    ],
+    "founders": [
+      { "full_name": "Петров Петр Петрович", "inn": "770000000002", "share_percent": 100 }
+    ],
+    "has_unreliable_records": false,
+    "bankruptcy_case": null
+  },
+  "7740000076": {
+    "inn": "7740000076",
+    "ogrn": "1027700000001",
     "entity_type": "LEGAL_ENTITY",
     "short_name": "ООО «ТехноСтарт»",
     "status": "ACTIVE",
-    "registration_date": "2025-11-20",
-    "age_months": 8,
+    "registration_date": "2023-12-20",
+    "age_months": 24,
     "okved_main": { "code": "62.01", "name": "Разработка компьютерного ПО" },
     "management": [
-      { "role": "GENERAL_DIRECTOR", "full_name": "Петрова Анна Сергеевна", "inn": "781234567890", "since": "2025-11-20", "disqualified": false }
+      { "role": "GENERAL_DIRECTOR", "full_name": "Сидоров Сидор Сидорович", "inn": "770000000003", "since": "2023-01-01", "disqualified": false }
+    ],
+    "founders": [
+      { "full_name": "Сидоров Сидор Сидорович", "inn": "770000000003", "share_percent": 100 }
     ],
     "has_unreliable_records": false,
     "bankruptcy_case": null
   },
-  "504712345678": {
-    "inn": "504712345678",
-    "ogrn": "315504700000000",
-    "entity_type": "INDIVIDUAL_ENTREPRENEUR",
-    "short_name": "ИП Петров А.С.",
-    "status": "ACTIVE",
-    "registration_date": "2025-06-01",
-    "age_months": 14,
-    "okved_main": { "code": "49.41", "name": "Деятельность автомобильного грузового транспорта" },
-    "management": [
-      { "role": "ENTREPRENEUR", "full_name": "Петров Алексей Сергеевич", "inn": "504712345678", "since": "2025-06-01", "disqualified": false }
-    ],
-    "has_unreliable_records": false,
-    "bankruptcy_case": null
-  },
-  "7709876543": {
-    "inn": "7709876543",
-    "ogrn": "1157746000001",
+  "7736050003": {
+    "inn": "7736050003",
+    "ogrn": "1027700000002",
     "entity_type": "LEGAL_ENTITY",
     "short_name": "ООО «СтройГрад»",
-    "status": "IN_LIQUIDATION",
-    "registration_date": "2016-08-15",
-    "age_months": 119,
+    "status": "ACTIVE",
+    "registration_date": "2015-01-15",
+    "age_months": 120,
     "okved_main": { "code": "41.20", "name": "Строительство жилых и нежилых зданий" },
     "management": [
-      { "role": "GENERAL_DIRECTOR", "full_name": "Сидоров Пётр Петрович", "inn": "770987654321", "since": "2025-01-15", "disqualified": true }
+      { "role": "GENERAL_DIRECTOR", "full_name": "Козлов Дмитрий Олегович", "inn": "770000000004", "since": "2015-01-01", "disqualified": false }
     ],
-    "has_unreliable_records": true,
-    "bankruptcy_case": null
-  },
-  "7723456789": {
-    "inn": "7723456789",
-    "ogrn": "1207700000002",
-    "entity_type": "LEGAL_ENTITY",
-    "short_name": "ООО «Лютик»",
-    "status": "ACTIVE",
-    "registration_date": "2020-02-01",
-    "age_months": 77,
-    "okved_main": { "code": "64.19", "name": "Денежное посредничество прочее" },
-    "management": [
-      { "role": "GENERAL_DIRECTOR", "full_name": "Козлов Дмитрий Олегович", "inn": "772345678901", "since": "2020-02-01", "disqualified": false }
+    "founders": [
+      { "full_name": "Козлов Дмитрий Олегович", "inn": "770000000004", "share_percent": 100 }
     ],
     "has_unreliable_records": false,
+    "bankruptcy_case": null
+  },
+  "500100732259": {
+    "inn": "500100732259",
+    "ogrn": "315504700000000",
+    "entity_type": "INDIVIDUAL_ENTREPRENEUR",
+    "short_name": "ИП Иванов И.И.",
+    "status": "ACTIVE",
+    "registration_date": "2022-06-01",
+    "age_months": 48,
+    "okved_main": { "code": "49.41", "name": "Деятельность автомобильного грузового транспорта" },
+    "management": [
+      { "role": "ENTREPRENEUR", "full_name": "Иванов Иван Иванович", "inn": "500100732259", "since": "2022-06-01", "disqualified": false }
+    ],
+    "founders": [
+      { "full_name": "Иванов Иван Иванович", "inn": "500100732259", "share_percent": 100 }
+    ],
+    "has_unreliable_records": true,
     "bankruptcy_case": null
   }
 }

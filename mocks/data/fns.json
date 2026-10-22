@@ -1,6 +1,6 @@
 {
-  "7701234567": {
-    "inn": "7701234567",
+  "7707083893": {
+    "inn": "7707083893",
     "blocked_accounts": false,
     "financials": {
       "years": [
@@ -9,22 +9,42 @@
     },
     "taxes": { "arrears": { "amount": 0, "oldest_days": 0 } }
   },
-  "7812345678": {
-    "inn": "7812345678",
+  "7736207543": {
+    "inn": "7736207543",
     "blocked_accounts": false,
     "financials": {
       "years": [
-        { "year": 2025, "revenue": 4200000, "net_profit": -800000, "is_growing": false }
+        { "year": 2025, "revenue": 150000000, "net_profit": 15000000, "is_growing": true }
       ]
     },
     "taxes": { "arrears": { "amount": 0, "oldest_days": 0 } }
   },
-  "504712345678": {
-    "inn": "504712345678",
+  "7740000076": {
+    "inn": "7740000076",
     "blocked_accounts": false,
     "financials": {
       "years": [
         { "year": 2025, "revenue": 18000000, "net_profit": 900000, "is_growing": false }
+      ]
+    },
+    "taxes": { "arrears": { "amount": 0, "oldest_days": 0 } }
+  },
+  "7736050003": {
+    "inn": "7736050003",
+    "blocked_accounts": false,
+    "financials": {
+      "years": [
+        { "year": 2025, "revenue": 120000000, "net_profit": 5000000, "is_growing": true }
+      ]
+    },
+    "taxes": { "arrears": { "amount": 15000, "oldest_days": 15 } }
+  },
+  "500100732259": {
+    "inn": "500100732259",
+    "blocked_accounts": false,
+    "financials": {
+      "years": [
+        { "year": 2025, "revenue": 4200000, "net_profit": -800000, "is_growing": false }
       ]
     },
     "taxes": { "arrears": { "amount": 0, "oldest_days": 0 } }

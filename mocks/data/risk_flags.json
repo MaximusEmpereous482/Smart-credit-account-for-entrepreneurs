@@ -1,27 +1,32 @@
 {
-  "7701234567": {
-    "inn": "7701234567",
+  "7707083893": {
+    "inn": "7707083893",
     "sources": { "arbitration_cases": { "as_defendant": 0 } },
-    "verdict": "CLEAN"
+    "verdict": "CLEAN",
+    "bankrupt_founders": []
   },
-  "7812345678": {
-    "inn": "7812345678",
+  "7736207543": {
+    "inn": "7736207543",
     "sources": { "arbitration_cases": { "as_defendant": 0 } },
-    "verdict": "CLEAN"
+    "verdict": "CLEAN",
+    "bankrupt_founders": []
   },
-  "504712345678": {
-    "inn": "504712345678",
+  "7740000076": {
+    "inn": "7740000076",
     "sources": { "arbitration_cases": { "as_defendant": 3 } },
-    "verdict": "REVIEW_REQUIRED"
+    "verdict": "REVIEW_REQUIRED",
+    "bankrupt_founders": []
   },
-  "7709876543": {
-    "inn": "7709876543",
+  "7736050003": {
+    "inn": "7736050003",
     "sources": { "arbitration_cases": { "as_defendant": 5 } },
-    "verdict": "HIGH_RISK"
+    "verdict": "HIGH_RISK",
+    "bankrupt_founders": []
   },
-  "7723456789": {
-    "inn": "7723456789",
+  "500100732259": {
+    "inn": "500100732259",
     "sources": { "arbitration_cases": { "as_defendant": 0 } },
-    "verdict": "CLEAN"
+    "verdict": "CLEAN",
+    "bankrupt_founders": ["500100732259"]
   }
 }
