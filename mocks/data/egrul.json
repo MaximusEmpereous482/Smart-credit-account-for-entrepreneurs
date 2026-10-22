@@ -35,11 +35,11 @@
     "entity_type": "INDIVIDUAL_ENTREPRENEUR",
     "short_name": "ИП Петров А.С.",
     "status": "ACTIVE",
-    "registration_date": "2015-06-01",
-    "age_months": 133,
+    "registration_date": "2025-06-01",
+    "age_months": 14,
     "okved_main": { "code": "49.41", "name": "Деятельность автомобильного грузового транспорта" },
     "management": [
-      { "role": "ENTREPRENEUR", "full_name": "Петров Алексей Сергеевич", "inn": "504712345678", "since": "2015-06-01", "disqualified": false }
+      { "role": "ENTREPRENEUR", "full_name": "Петров Алексей Сергеевич", "inn": "504712345678", "since": "2025-06-01", "disqualified": false }
     ],
     "has_unreliable_records": false,
     "bankruptcy_case": null

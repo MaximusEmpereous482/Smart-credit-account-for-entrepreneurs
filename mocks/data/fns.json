@@ -1,69 +1,32 @@
 {
   "7701234567": {
     "inn": "7701234567",
-    "as_of": "2026-07-01",
-    "tax_regime": "GENERAL",
+    "blocked_accounts": false,
     "financials": {
       "years": [
-        { "year": 2025, "revenue": 187500000, "net_profit": 21200000, "assets": 98000000, "liabilities": 41000000, "equity": 57000000 },
-        { "year": 2024, "revenue": 154200000, "net_profit": 16300000, "assets": 84000000, "liabilities": 39000000, "equity": 45000000 },
-        { "year": 2023, "revenue": 121000000, "net_profit": 10100000, "assets": 72000000, "liabilities": 37000000, "equity": 35000000 }
+        { "year": 2025, "revenue": 187500000, "net_profit": 21200000, "is_growing": true }
       ]
     },
-    "taxes": { "paid_last_12m": 14800000, "arrears": { "amount": 0, "count": 0, "oldest_days": 0 } },
-    "employees": { "average_2025": 34 },
-    "unreliability_signs": []
+    "taxes": { "arrears": { "amount": 0, "oldest_days": 0 } }
   },
   "7812345678": {
     "inn": "7812345678",
-    "as_of": "2026-07-01",
-    "tax_regime": "USN",
+    "blocked_accounts": false,
     "financials": {
       "years": [
-        { "year": 2025, "revenue": 4200000, "net_profit": -800000, "assets": 1500000, "liabilities": 900000, "equity": 600000 }
+        { "year": 2025, "revenue": 4200000, "net_profit": -800000, "is_growing": false }
       ]
     },
-    "taxes": { "paid_last_12m": 180000, "arrears": { "amount": 0, "count": 0, "oldest_days": 0 } },
-    "employees": { "average_2025": 4 },
-    "unreliability_signs": []
+    "taxes": { "arrears": { "amount": 0, "oldest_days": 0 } }
   },
   "504712345678": {
     "inn": "504712345678",
-    "as_of": "2026-07-01",
-    "tax_regime": "USN",
+    "blocked_accounts": false,
     "financials": {
       "years": [
-        { "year": 2025, "revenue": 18000000, "net_profit": 900000, "assets": 5000000, "liabilities": 3200000, "equity": 1800000 }
+        { "year": 2025, "revenue": 18000000, "net_profit": 900000, "is_growing": false }
       ]
     },
-    "taxes": { "paid_last_12m": 620000, "arrears": { "amount": 240000, "count": 2, "oldest_days": 34 } },
-    "employees": { "average_2025": 6 },
-    "unreliability_signs": []
-  },
-  "7709876543": {
-    "inn": "7709876543",
-    "as_of": "2026-07-01",
-    "tax_regime": "GENERAL",
-    "financials": {
-      "years": [
-        { "year": 2024, "revenue": 95000000, "net_profit": -12000000, "assets": 60000000, "liabilities": 71000000, "equity": -11000000 }
-      ]
-    },
-    "taxes": { "paid_last_12m": 0, "arrears": { "amount": 3400000, "count": 8, "oldest_days": 210 } },
-    "employees": { "average_2024": 12 },
-    "unreliability_signs": ["MASS_ADDRESS", "DIRECTOR_CHANGES"]
-  },
-  "7723456789": {
-    "inn": "7723456789",
-    "as_of": "2026-07-01",
-    "tax_regime": "GENERAL",
-    "financials": {
-      "years": [
-        { "year": 2025, "revenue": 32000000, "net_profit": 2100000, "assets": 12000000, "liabilities": 8000000, "equity": 4000000 }
-      ]
-    },
-    "taxes": { "paid_last_12m": 2100000, "arrears": { "amount": 0, "count": 0, "oldest_days": 0 } },
-    "employees": { "average_2025": 9 },
-    "unreliability_signs": ["TRANSIT_OPERATIONS"]
+    "taxes": { "arrears": { "amount": 0, "oldest_days": 0 } }
   }
 }
