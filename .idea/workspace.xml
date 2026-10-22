@@ -4,19 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8171917f-2810-4334-8521-a4e8dd179252" name="Changes" comment="fixed imports">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="8171917f-2810-4334-8521-a4e8dd179252" name="Changes" comment="-Add INN checksum validation using FNS algorithm&#10;-Implement strict Enum for loan purposes to prevent parsing errors&#10;-Add data enrichment logic to update Company profile from EGRUL mock&#10;-Improve error handling: fallback to MANUAL_REVIEW on mock failures/timeouts&#10;-Add human-readable error messages to check_results table&#10;-Update DB schema: add cascades, indexes, reason_code for decisions&#10;-Fix decision logic: prevent approved_amount generation for REJECTED statuses&#10;-Add CORS middleware for frontend integration&#10;-Update mock data with 5 valid INN scenarios (approved, counter-offer, rejected, etc.)&quot;">
       <change beforePath="$PROJECT_DIR$/mocks/data/bki.json" beforeDir="false" afterPath="$PROJECT_DIR$/mocks/data/bki.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mocks/data/egrul.json" beforeDir="false" afterPath="$PROJECT_DIR$/mocks/data/egrul.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mocks/data/fns.json" beforeDir="false" afterPath="$PROJECT_DIR$/mocks/data/fns.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mocks/data/risk_flags.json" beforeDir="false" afterPath="$PROJECT_DIR$/mocks/data/risk_flags.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mocks/data/zsk.json" beforeDir="false" afterPath="$PROJECT_DIR$/mocks/data/zsk.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/app/api/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/api/client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/app/core/pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/core/pipeline.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/app/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/orchestrator.db" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,6 +53,7 @@
     <MESSAGE value="mocks" />
     <MESSAGE value="update pipeline with BA scoring logic and fix mocks by analise of business-analitic" />
     <MESSAGE value="fixed imports" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed imports" />
+    <MESSAGE value="-Add INN checksum validation using FNS algorithm&#10;-Implement strict Enum for loan purposes to prevent parsing errors&#10;-Add data enrichment logic to update Company profile from EGRUL mock&#10;-Improve error handling: fallback to MANUAL_REVIEW on mock failures/timeouts&#10;-Add human-readable error messages to check_results table&#10;-Update DB schema: add cascades, indexes, reason_code for decisions&#10;-Fix decision logic: prevent approved_amount generation for REJECTED statuses&#10;-Add CORS middleware for frontend integration&#10;-Update mock data with 5 valid INN scenarios (approved, counter-offer, rejected, etc.)&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="-Add INN checksum validation using FNS algorithm&#10;-Implement strict Enum for loan purposes to prevent parsing errors&#10;-Add data enrichment logic to update Company profile from EGRUL mock&#10;-Improve error handling: fallback to MANUAL_REVIEW on mock failures/timeouts&#10;-Add human-readable error messages to check_results table&#10;-Update DB schema: add cascades, indexes, reason_code for decisions&#10;-Fix decision logic: prevent approved_amount generation for REJECTED statuses&#10;-Add CORS middleware for frontend integration&#10;-Update mock data with 5 valid INN scenarios (approved, counter-offer, rejected, etc.)&quot;" />
   </component>
 </project>
