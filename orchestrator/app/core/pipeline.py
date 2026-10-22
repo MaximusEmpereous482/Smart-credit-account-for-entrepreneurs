@@ -2,9 +2,9 @@ import logging
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from app.database import SessionLocal
-from app import models
-from app.core import mocks_client
+from orchestrator.app.database import SessionLocal
+from orchestrator.app import models
+from orchestrator.app.core import mocks_client
 
 logger = logging.getLogger(__name__)
 

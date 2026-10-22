@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from app.database import engine, Base
+from orchestrator.app.database import engine, Base
 from app import models
-from app.api import client # <--- ОБЯЗАТЕЛЬНО ДОЛЖНО БЫТЬ
+from orchestrator.app.api import client # <--- ОБЯЗАТЕЛЬНО ДОЛЖНО БЫТЬ
 
 Base.metadata.create_all(bind=engine)
 

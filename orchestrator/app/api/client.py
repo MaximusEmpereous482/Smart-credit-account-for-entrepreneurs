@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 
-from app.database import get_db
-from app import models, schemas
-from app.core.pipeline import run_pipeline  # <-- Импортируем наш мозг
+from orchestrator.app.database import get_db
+from orchestrator.app import models, schemas
+from orchestrator.app.core.pipeline import run_pipeline  # <-- Импортируем наш мозг
 
 router = APIRouter()
 

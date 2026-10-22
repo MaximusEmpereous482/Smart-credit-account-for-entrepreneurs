@@ -4,13 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8171917f-2810-4334-8521-a4e8dd179252" name="Changes" comment="mocks">
+    <list default="true" id="8171917f-2810-4334-8521-a4e8dd179252" name="Changes" comment="update pipeline with BA scoring logic and fix mocks by analise of business-analitic">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mocks/data/bki.json" beforeDir="false" afterPath="$PROJECT_DIR$/mocks/data/bki.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mocks/data/egrul.json" beforeDir="false" afterPath="$PROJECT_DIR$/mocks/data/egrul.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mocks/data/fns.json" beforeDir="false" afterPath="$PROJECT_DIR$/mocks/data/fns.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mocks/data/risk_flags.json" beforeDir="false" afterPath="$PROJECT_DIR$/mocks/data/risk_flags.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orchestrator/app/api/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/api/client.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/orchestrator/app/core/pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/core/pipeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orchestrator/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orchestrator/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/models.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,7 +27,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
@@ -52,6 +51,7 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="VcsManagerConfiguration">
     <MESSAGE value="mocks" />
-    <option name="LAST_COMMIT_MESSAGE" value="mocks" />
+    <MESSAGE value="update pipeline with BA scoring logic and fix mocks by analise of business-analitic" />
+    <option name="LAST_COMMIT_MESSAGE" value="update pipeline with BA scoring logic and fix mocks by analise of business-analitic" />
   </component>
 </project>

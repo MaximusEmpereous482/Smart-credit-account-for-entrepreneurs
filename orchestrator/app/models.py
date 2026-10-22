@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, JSON, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from app.database import Base
+from orchestrator.app.database import Base
 
 
 class Company(Base):
