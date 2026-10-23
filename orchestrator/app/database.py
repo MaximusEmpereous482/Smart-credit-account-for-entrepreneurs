@@ -2,7 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Файл базы данных будет создан автоматически в папке orchestrator
-SQLALCHEMY_DATABASE_URL = "sqlite:///./orchestrator.db"
+# БЫЛО: SQLALCHEMY_DATABASE_URL = "sqlite:///./orchestrator.db"
+# СТАЛО:
+SQLALCHEMY_DATABASE_URL = "sqlite:////app/data/orchestrator.db"
 
 # check_same_thread=False нужен только для SQLite
 engine = create_engine(

@@ -1,0 +1,23 @@
+services:
+  mock:
+    build: ./mocks
+    ports:
+      - "8001:8000"
+
+  orchestrator:
+    build: ./orchestrator
+    ports:
+      - "8002:8000"
+    environment:
+      - MOCK_SERVICE_URL=http://mock:8000
+    volumes:
+      - ./orchestrator/data:/app/data   # <--- Привязываем папку data
+    depends_on:
+      - mock
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - orchestrator
