@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>СмартКредит — Умный кредит для малого бизнеса</title>
+  
+  <style>
+    /* Подключение шрифтового семейства Styrene A */
+    @font-face {
+      font-family: 'Styrene A LC';
+      src: local('Styrene A LC'), local('StyreneA-LC'), local('Styrene A Bold');
+      font-weight: 700;
+    }
+    @font-face {
+      font-family: 'Styrene A';
+      src: local('Styrene A Regular'), local('StyreneA-Regular');
+      font-weight: 400;
+    }
+
+    :root {
+      /* Фирменная палитра */
+      --color-primary: #EF3124;
+      --color-primary-dark: #6B1313;
+      --color-orange: #F27A23;
+      --color-pink: #C22B69;
+      --color-purple: #5A388D;
+      --color-purple-light: #7F64B9;
+      --color-olive: #9B9833;
+      --color-peach-light: #FFF0E5;
+      --color-peach-bg: #FCD299;
+      --color-bg-page: #F4F5F7;
+      --color-card-bg: #FFFFFF;
+      --color-text-main: #0B0B0C;
+      --color-text-secondary: #62657A;
+      --color-success: #2E7D32;
+
+      --font-heading: 'Styrene A LC', -apple-system, sans-serif;
+      --font-body: 'Styrene A', -apple-system, sans-serif;
+
+      --radius-l: 24px;
+      --radius-m: 16px;
+      --radius-s: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--color-bg-page);
+      color: var(--color-text-main);
+      font-family: var(--font-body);
+      line-height: 1.5;
+    }
+
+    h1, h2, h3, h4 { font-family: var(--font-heading); }
+
+    /* Хедер */
+    header {
+      background: #FFFFFF;
+      padding: 16px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #E2E4EA;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo-block { display: flex; align-items: center; gap: 12px; }
+    .logo-img { height: 36px; width: auto; }
+    .logo-text { font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--color-text-main); }
+
+    nav { display: flex; gap: 28px; }
+    nav a { text-decoration: none; color: var(--color-text-secondary); font-weight: 500; font-size: 15px; transition: color 0.2s; }
+    nav a:hover { color: var(--color-primary); }
+
+    .btn-outline {
+      border: 2px solid var(--color-primary);
+      color: var(--color-primary);
+      background: transparent;
+      padding: 10px 20px;
+      border-radius: var(--radius-s);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-outline:hover { background: var(--color-primary); color: white; }
+
+    .container { max-width: 1240px; margin: 0 auto; padding: 40px 20px; }
+
+    /* Первый экран (Hero) */
+    .hero { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 32px; align-items: center; margin-bottom: 60px; }
+    .hero-card { background: var(--color-card-bg); border-radius: var(--radius-l); padding: 48px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); }
+    .hero-title { font-size: 42px; line-height: 1.15; margin-bottom: 20px; }
+    .hero-desc { font-size: 18px; color: var(--color-text-secondary); margin-bottom: 32px; max-width: 90%; }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      padding: 18px 36px;
+      border-radius: var(--radius-s);
+      font-size: 18px;
+      font-family: var(--font-heading);
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 4px 16px rgba(239, 49, 36, 0.3);
+    }
+    .btn-primary:hover { background: var(--color-primary-dark); }
+
+    .hero-img-box {
+      border-radius: var(--radius-l);
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+      background: #FFFFFF;
+      display: flex; justify-content: center; align-items: center;
+      height: 100%; min-height: 380px;
+    }
+    .hero-img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Калькулятор */
+    .calc-section { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 60px; }
+    .calc-box { background: var(--color-card-bg); border-radius: var(--radius-l); padding: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); }
+    .calc-title { font-size: 28px; margin-bottom: 32px; }
+    .calc-field { margin-bottom: 28px; }
+    .calc-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
+    .calc-label { color: var(--color-text-secondary); font-size: 15px; }
+    .calc-value { font-family: var(--font-heading); font-size: 20px; font-weight: 700; }
+    .range-input { width: 100%; accent-color: var(--color-primary); height: 6px; cursor: pointer; }
+    .calc-result-box {
+      background: var(--color-peach-light);
+      border-radius: var(--radius-m);
+      padding: 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 32px;
+    }
+    .calc-result-price { font-size: 32px; font-family: var(--font-heading); color: var(--color-primary-dark); }
+
+    .banner-chair {
+      background: #FFFFFF;
+      border-radius: var(--radius-l);
+      padding: 32px;
+      display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+    }
+    .banner-chair img { max-width: 85%; height: auto; }
+
+    /* Сетка 3D Фигур */
+    .features-title { font-size: 32px; margin-bottom: 32px; text-align: center; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 60px; }
+    .feature-card {
+      background: var(--color-card-bg);
+      border-radius: var(--radius-m);
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      transition: transform 0.2s;
+    }
+    .feature-card:hover { transform: translateY(-5px); }
+    .feature-icon { height: 120px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+    .feature-icon img { max-height: 100%; max-width: 100%; object-fit: contain; }
+    .feature-card h3 { font-size: 20px; margin-bottom: 12px; }
+    .feature-card p { color: var(--color-text-secondary); font-size: 14px; }
+
+    /* Модальное окно заявки и скоринга */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(11, 11, 12, 0.6);
+      backdrop-filter: blur(4px);
+      display: none; justify-content: center; align-items: center;
+      z-index: 1000;
+    }
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-l);
+      padding: 40px;
+      width: 100%; max-width: 540px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 20px; right: 20px;
+      background: none; border: none; font-size: 24px; cursor: pointer; color: var(--color-text-secondary);
+    }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 14px; color: var(--color-text-secondary); margin-bottom: 8px; }
+    .form-input {
+      width: 100%; padding: 14px 18px;
+      border: 1px solid #D0D3DC; border-radius: var(--radius-s);
+      font-size: 16px; font-family: var(--font-body);
+      outline: none; transition: border 0.2s;
+    }
+    .form-input:focus { border-color: var(--color-primary); }
+
+    /* Элементы отображения статуса скоринга */
+    .scoring-step {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px; border-radius: var(--radius-s);
+      background: var(--color-bg-page); margin-bottom: 12px;
+    }
+    .scoring-info { display: flex; align-items: center; gap: 12px; }
+    .scoring-icon { width: 36px; height: 36px; border-radius: 50%; background: #E2E4EA; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+    .status-badge { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+    .badge-wait { background: #E2E4EA; color: var(--color-text-secondary); }
+    .badge-process { background: var(--color-peach-light); color: var(--color-orange); }
+    .badge-success { background: #E8F5E9; color: var(--color-success); }
+
+    footer { background: #FFFFFF; border-top: 1px solid #E2E4EA; padding: 40px; text-align: center; color: var(--color-text-secondary); font-size: 14px; }
+  </style>
+</head>
+<body>
+
+  <!-- Шапка сайта -->
+  <header>
+    <div class="logo-block">
+      <img src="watermarked_img_5932817447651275601.jpg" alt="Логотип" class="logo-img">
+      <span class="logo-text">СмартКредит</span>
+    </div>
+    <nav>
+      <a href="#calc">Калькулятор</a>
+      <a href="#features">Преимущества</a>
+    </nav>
+    <button class="btn-outline" onclick="openModal()">Войти</button>
+  </header>
+
+  <div class="container">
+    <!-- Первый экран -->
+    <section class="hero">
+      <div class="hero-card">
+        <h1 class="hero-title">Смарт-кредит для бизнеса за 2 минуты</h1>
+        <p class="hero-desc">Автоматическая оценка по ИНН. Без залога, поручителей и бумажных справок.</p>
+        <button class="btn-primary" onclick="openModal()">Подать заявку</button>
+      </div>
+      
+      <div class="hero-img-box">
+        <img src="8fdb038a13c5860e2781e11c90e9b087.png" alt="Бизнес смарт-кредит">
+      </div>
+    </section>
+
+    <!-- Интерактивный калькулятор -->
+    <section class="calc-section" id="calc">
+      <div class="calc-box">
+        <h2 class="calc-title">Параметры кредита</h2>
+
+        <div class="calc-field">
+          <div class="calc-header">
+            <span class="calc-label">Сумма кредита</span>
+            <span class="calc-value" id="amount-text">1 500 000 ₽</span>
+          </div>
+          <input type="range" class="range-input" id="amount-slider" min="100000" max="10000000" step="50000" value="1500000">
+        </div>
+
+        <div class="calc-field">
+          <div class="calc-header">
+            <span class="calc-label">Срок кредитования</span>
+            <span class="calc-value" id="term-text">12 месяцев</span>
+          </div>
+          <input type="range" class="range-input" id="term-slider" min="3" max="36" step="1" value="12">
+        </div>
+
+        <div class="calc-result-box">
+          <div>
+            <div style="color: var(--color-text-secondary); font-size: 14px;">Ежемесячный платеж</div>
+            <div class="calc-result-price" id="payment-text">136 500 ₽</div>
+          </div>
+          <button class="btn-primary" style="padding: 12px 24px; font-size: 15px;" onclick="openModal()">Оформить</button>
+        </div>
+      </div>
+
+      <!-- Дополнительная карточка баннера -->
+      <div class="banner-chair">
+        <img src="bce75f6e077c3c924f03017a2d18fb9f.png" alt="Комфортные условия">
+        <div>
+          <h3 style="font-size: 22px; margin-bottom: 8px;">Комфорт и скорость</h3>
+          <p style="color: var(--color-text-secondary); font-size: 14px;">Все проверки выполняются в фоновом режиме через онлайн-сервисы.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Секция преимуществ с 3D-элементами -->
+    <h2 class="features-title" id="features">Технологии экспресс-проверки</h2>
+    <section class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><img src="9ee99606b6bcf2268c3932f9366a0d44.png" alt="ЕГРЮЛ"></div>
+        <h3>Проверка ЕГРЮЛ / ФНС</h3>
+        <p>Мгновенный анализ юридического статуса и финансовой отчетности компании.</p>
+Вот финальная, полностью собранная версия файла `index.html`. В ней объединены все ранее разработанные секции: интерактивный калькулятор, блок 3D-преимуществ, стили в духе Core DS с вашей палитрой и шрифтами, а также готовая интеграция модального окна проверок.
+
+Сохраните этот код в файл `index.html` в вашем репозитории:
+
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>СмартКредит — Умный кредит для малого бизнеса</title>
+  
+  <style>
+    @font-face {
+      font-family: 'Styrene A LC';
+      src: local('Styrene A LC'), local('StyreneA-LC'), local('Styrene A Bold');
+      font-weight: 700;
+    }
+    @font-face {
+      font-family: 'Styrene A';
+      src: local('Styrene A Regular'), local('StyreneA-Regular');
+      font-weight: 400;
+    }
+
+    :root {
+      /* Фирменная палитра */
+      --color-primary: #EF3124;
+      --color-primary-dark: #6B1313;
+      --color-orange: #F27A23;
+      --color-pink: #C22B69;
+      --color-purple: #5A388D;
+      --color-purple-light: #7F64B9;
+      --color-olive: #9B9833;
+      --color-peach-light: #FFF0E5;
+      --color-peach-bg: #FCD299;
+      --color-bg-page: #F4F5F7;
+      --color-card-bg: #FFFFFF;
+      --color-text-main: #0B0B0C;
+      --color-text-secondary: #62657A;
+      --color-success: #2E7D32;
+
+      --font-heading: 'Styrene A LC', -apple-system, sans-serif;
+      --font-body: 'Styrene A', -apple-system, sans-serif;
+
+      --radius-l: 24px;
+      --radius-m: 16px;
+      --radius-s: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--color-bg-page);
+      color: var(--color-text-main);
+      font-family: var(--font-body);
+      line-height: 1.5;
+    }
+
+    h1, h2, h3, h4 { font-family: var(--font-heading); }
+
+    /* Хедер */
+    header {
+      background: #FFFFFF;
+      padding: 16px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #E2E4EA;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo-block { display: flex; align-items: center; gap: 12px; }
+    .logo-img { height: 36px; width: auto; }
+    .logo-text { font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--color-text-main); }
+
+    nav { display: flex; gap: 28px; }
+    nav a { text-decoration: none; color: var(--color-text-secondary); font-weight: 500; font-size: 15px; transition: color 0.2s; }
+    nav a:hover { color: var(--color-primary); }
+
+    .btn-outline {
+      border: 2px solid var(--color-primary);
+      color: var(--color-primary);
+      background: transparent;
+      padding: 10px 20px;
+      border-radius: var(--radius-s);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-outline:hover { background: var(--color-primary); color: white; }
+
+    .container { max-width: 1240px; margin: 0 auto; padding: 40px 20px; }
+
+    /* Hero */
+    .hero { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 32px; align-items: center; margin-bottom: 60px; }
+    .hero-card { background: var(--color-card-bg); border-radius: var(--radius-l); padding: 48px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); }
+    .hero-title { font-size: 42px; line-height: 1.15; margin-bottom: 20px; }
+    .hero-desc { font-size: 18px; color: var(--color-text-secondary); margin-bottom: 32px; max-width: 90%; }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      padding: 18px 36px;
+      border-radius: var(--radius-s);
+      font-size: 18px;
+      font-family: var(--font-heading);
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 4px 16px rgba(239, 49, 36, 0.3);
+    }
+    .btn-primary:hover { background: var(--color-primary-dark); }
+
+    .hero-img-box {
+      border-radius: var(--radius-l);
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+      background: #FFFFFF;
+      display: flex; justify-content: center; align-items: center;
+      height: 100%; min-height: 380px;
+    }
+    .hero-img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Калькулятор */
+    .calc-section { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 60px; }
+    .calc-box { background: var(--color-card-bg); border-radius: var(--radius-l); padding: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); }
+    .calc-title { font-size: 28px; margin-bottom: 32px; }
+    .calc-field { margin-bottom: 28px; }
+    .calc-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
+    .calc-label { color: var(--color-text-secondary); font-size: 15px; }
+    .calc-value { font-family: var(--font-heading); font-size: 20px; font-weight: 700; }
+    .range-input { width: 100%; accent-color: var(--color-primary); height: 6px; cursor: pointer; }
+    .calc-result-box {
+      background: var(--color-peach-light);
+      border-radius: var(--radius-m);
+      padding: 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 32px;
+    }
+    .calc-result-price { font-size: 32px; font-family: var(--font-heading); color: var(--color-primary-dark); }
+
+    .banner-chair {
+      background: #FFFFFF;
+      border-radius: var(--radius-l);
+      padding: 32px;
+      display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+    }
+    .banner-chair img { max-width: 85%; height: auto; }
+
+    /* 3D Преимущества */
+    .features-title { font-size: 32px; margin-bottom: 32px; text-align: center; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 60px; }
+    .feature-card {
+      background: var(--color-card-bg);
+      border-radius: var(--radius-m);
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      transition: transform 0.2s;
+    }
+    .feature-card:hover { transform: translateY(-5px); }
+    .feature-icon { height: 120px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+    .feature-icon img { max-height: 100%; max-width: 100%; object-fit: contain; }
+    .feature-card h3 { font-size: 20px; margin-bottom: 12px; }
+    .feature-card p { color: var(--color-text-secondary); font-size: 14px; }
+
+    /* Модальное окно скоринга */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(11, 11, 12, 0.6);
+      backdrop-filter: blur(4px);
+      display: none; justify-content: center; align-items: center;
+      z-index: 1000;
+    }
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-l);
+      padding: 40px;
+      width: 100%; max-width: 540px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 20px; right: 20px;
+      background: none; border: none; font-size: 24px; cursor: pointer; color: var(--color-text-secondary);
+    }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 14px; color: var(--color-text-secondary); margin-bottom: 8px; }
+    .form-input {
+      width: 100%; padding: 14px 18px;
+      border: 1px solid #D0D3DC; border-radius: var(--radius-s);
+      font-size: 16px; font-family: var(--font-body);
+      outline: none; transition: border 0.2s;
+    }
+    .form-input:focus { border-color: var(--color-primary); }
+
+    .scoring-step {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px; border-radius: var(--radius-s);
+      background: var(--color-bg-page); margin-bottom: 12px;
+    }
+    .scoring-info { display: flex; align-items: center; gap: 12px; }
+    .scoring-icon { width: 36px; height: 36px; border-radius: 50%; background: #E2E4EA; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+    .status-badge { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+    .badge-wait { background: #E2E4EA; color: var(--color-text-secondary); }
+    .badge-process { background: var(--color-peach-light); color: var(--color-orange); }
+    .badge-success { background: #E8F5E9; color: var(--color-success); }
+
+    footer { background: #FFFFFF; border-top: 1px solid #E2E4EA; padding: 40px; text-align: center; color: var(--color-text-secondary); font-size: 14px; }
+  </style>
+</head>
+<body>
+
+  <!-- Хедер -->
+  <header>
+    <div class="logo-block">
+      <img src="watermarked_img_5932817447651275601.jpg" alt="Логотип" class="logo-img">
+      <span class="logo-text">СмартКредит</span>
+    </div>
+    <nav>
+      <a href="#calc">Калькулятор</a>
+      <a href="#features">Преимущества</a>
+    </nav>
+    <button class="btn-outline" onclick="openModal()">Войти</button>
+  </header>
+
+  <div class="container">
+    <!-- Первый экран -->
+    <section class="hero">
+      <div class="hero-card">
+        <h1 class="hero-title">Смарт-кредит для бизнеса за 2 минуты</h1>
+        <p class="hero-desc">Автоматическая оценка по ИНН. Без залога, поручителей и бумажных справок.</p>
+        <button class="btn-primary" onclick="openModal()">Подать заявку</button>
+      </div>
+      
+      <div class="hero-img-box">
+        <img src="8fdb038a13c5860e2781e11c90e9b087.png" alt="Бизнес смарт-кредит">
+      </div>
+    </section>
+
+    <!-- Калькулятор -->
+    <section class="calc-section" id="calc">
+      <div class="calc-box">
+        <h2 class="calc-title">Параметры кредита</h2>
+
+        <div class="calc-field">
+          <div class="calc-header">
+            <span class="calc-label">Сумма кредита</span>
+            <span class="calc-value" id="amount-text">1 500 000 ₽</span>
+          </div>
+          <input type="range" class="range-input" id="amount-slider" min="100000" max="10000000" step="50000" value="1500000">
+        </div>
+
+        <div class="calc-field">
+          <div class="calc-header">
+            <span class="calc-label">Срок кредитования</span>
+            <span class="calc-value" id="term-text">12 месяцев</span>
+          </div>
+          <input type="range" class="range-input" id="term-slider" min="3" max="36" step="1" value="12">
+        </div>
+
+        <div class="calc-result-box">
+          <div>
+            <div style="color: var(--color-text-secondary); font-size: 14px;">Ежемесячный платеж</div>
+            <div class="calc-result-price" id="payment-text">136 500 ₽</div>
+          </div>
+          <button class="btn-primary" style="padding: 12px 24px; font-size: 15px;" onclick="openModal()">Оформить</button>
+        </div>
+      </div>
+
+      <div class="banner-chair">
+        <img src="bce75f6e077c3c924f03017a2d18fb9f.png" alt="Комфортные условия">
+        <div>
+          <h3 style="font-size: 22px; margin-bottom: 8px;">Комфорт и скорость</h3>
+          <p style="color: var(--color-text-secondary); font-size: 14px;">Все проверки выполняются в фоновом режиме через онлайн-сервисы.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3D Карточки -->
+    <h2 class="features-title" id="features">Технологии экспресс-проверки</h2>
+    <section class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><img src="9ee99606b6bcf2268c3932f9366a0d44.png" alt="ЕГРЮЛ"></div>
+        <h3>Проверка ЕГРЮЛ / ФНС</h3>
+        <p>Мгновенный анализ юридического статуса и финансовой отчетности компании.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><img src="2cd0347ccc674e97e1ebc413e2b9d769.png" alt="Скоринг"></div>
+        <h3>Точный скоринг</h3>
+        <p>Интеграция с БКИ и умные алгоритмы скоринга для быстрого одобрения.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><img src="44d79da6f3b9b8a17bbe7b2395d356eb.png" alt="ЗСК"></div>
+        <h3>Контроль ЗСК</h3>
+        <p>Проверка по системе ЗСК для максимальной надежности и защиты сделки.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><img src="a27b0660e78b2aa6ebf56455e0c0cbc3.png" alt="Скорость"></div>
+        <h3>Скорость решения</h3>
+        <p>Автоматизированная оркестрация заявок занимает не более 2 минут.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><img src="b1b5f0a47d09886a7177783da61917d8.png" alt="Прозрачность"></div>
+        <h3>Прозрачные условия</h3>
+        <p>Никаких скрытых комиссий — фиксированный процент на весь срок.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><img src="75cb9958fc3a843543818d5c7f317cc5.png" alt="Экосистема"></div>
+        <h3>Экосистема МСП</h3>
+        <p>Гибкие лимиты и удобный график погашения для развития вашего бизнеса.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Модальное окно подачи заявки -->
+  <div class="modal-overlay" id="app-modal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal()">×</button>
+
+      <!-- Ввод ИНН -->
+      <div id="step-form">
+        <h2 style="font-size: 24px; margin-bottom: 12px;">Экспресс-заявка</h2>
+        <p style="color: var(--color-text-secondary); font-size: 14px; margin-bottom: 2

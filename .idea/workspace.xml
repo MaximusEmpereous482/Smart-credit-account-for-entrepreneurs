@@ -4,12 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8171917f-2810-4334-8521-a4e8dd179252" name="Changes" comment="-Add INN checksum validation using FNS algorithm&#10;-Implement strict Enum for loan purposes to prevent parsing errors&#10;-Add data enrichment logic to update Company profile from EGRUL mock&#10;-Improve error handling: fallback to MANUAL_REVIEW on mock failures/timeouts&#10;-Add human-readable error messages to check_results table&#10;-Update DB schema: add cascades, indexes, reason_code for decisions&#10;-Fix decision logic: prevent approved_amount generation for REJECTED statuses&#10;-Add CORS middleware for frontend integration&#10;-Update mock data with 5 valid INN scenarios (approved, counter-offer, rejected, etc.)&quot;">
-      <change beforePath="$PROJECT_DIR$/mocks/data/bki.json" beforeDir="false" afterPath="$PROJECT_DIR$/mocks/data/bki.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mocks/data/egrul.json" beforeDir="false" afterPath="$PROJECT_DIR$/mocks/data/egrul.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mocks/data/fns.json" beforeDir="false" afterPath="$PROJECT_DIR$/mocks/data/fns.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mocks/data/risk_flags.json" beforeDir="false" afterPath="$PROJECT_DIR$/mocks/data/risk_flags.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mocks/data/zsk.json" beforeDir="false" afterPath="$PROJECT_DIR$/mocks/data/zsk.json" afterDir="false" />
+    <list default="true" id="8171917f-2810-4334-8521-a4e8dd179252" name="Changes" comment="-Add INN checksum validation using FNS algorithm&#10;-Implement strict Enum for loan purposes to prevent parsing errors&#10;&#10;-Add data enrichment logic to update Company profile from EGRUL mock&#10;&#10;-Improve error handling: fallback to MANUAL_REVIEW on mock failures/timeouts&#10;&#10;-Add human-readable error messages to check_results table&#10;&#10;-Update DB schema: add cascades, indexes, reason_code for decisions&#10;&#10;-Fix decision logic: prevent approved_amount generation for REJECTED statuses&#10;&#10;-Add CORS middleware for frontend integration&#10;-Update mock data with 5 valid INN scenarios (approved, counter-offer, rejected, etc.)&quot;">
+      <change afterPath="$PROJECT_DIR$/frontend/2924b14ab7878c2b95a6286f185749ea.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/2cd0347ccc674e97e1ebc413e2b9d769.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/44d79da6f3b9b8a17bbe7b2395d356eb.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/75cb9958fc3a843543818d5c7f317cc5.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/8f09a80ea5062e2b509f0b7e1cbbbc53.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/8fdb038a13c5860e2781e11c90e9b087.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/9ee99606b6bcf2268c3932f9366a0d44.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/a00b4a66f12e8bb9acffc45e9908a99f.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/a27b0660e78b2aa6ebf56455e0c0cbc3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/a2b885a0e132f597acc62830a7eb62c1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/a5b73899a4a9b68b3ce7d4d251e2bcb2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/b1b5f0a47d09886a7177783da61917d8.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/b541e0ce6f575a2364d2e6e8a74e7560.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/bce75f6e077c3c924f03017a2d18fb9f.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/f496b94d8e633c8251250ad4db8d7357.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/f678bc364f3f235fc96c28bf11e91e93.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Smart-credit-account-for-entrepreneurs.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Smart-credit-account-for-entrepreneurs.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,6 +67,7 @@
     <MESSAGE value="update pipeline with BA scoring logic and fix mocks by analise of business-analitic" />
     <MESSAGE value="fixed imports" />
     <MESSAGE value="-Add INN checksum validation using FNS algorithm&#10;-Implement strict Enum for loan purposes to prevent parsing errors&#10;-Add data enrichment logic to update Company profile from EGRUL mock&#10;-Improve error handling: fallback to MANUAL_REVIEW on mock failures/timeouts&#10;-Add human-readable error messages to check_results table&#10;-Update DB schema: add cascades, indexes, reason_code for decisions&#10;-Fix decision logic: prevent approved_amount generation for REJECTED statuses&#10;-Add CORS middleware for frontend integration&#10;-Update mock data with 5 valid INN scenarios (approved, counter-offer, rejected, etc.)&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="-Add INN checksum validation using FNS algorithm&#10;-Implement strict Enum for loan purposes to prevent parsing errors&#10;-Add data enrichment logic to update Company profile from EGRUL mock&#10;-Improve error handling: fallback to MANUAL_REVIEW on mock failures/timeouts&#10;-Add human-readable error messages to check_results table&#10;-Update DB schema: add cascades, indexes, reason_code for decisions&#10;-Fix decision logic: prevent approved_amount generation for REJECTED statuses&#10;-Add CORS middleware for frontend integration&#10;-Update mock data with 5 valid INN scenarios (approved, counter-offer, rejected, etc.)&quot;" />
+    <MESSAGE value="-Add INN checksum validation using FNS algorithm&#10;-Implement strict Enum for loan purposes to prevent parsing errors&#10;&#10;-Add data enrichment logic to update Company profile from EGRUL mock&#10;&#10;-Improve error handling: fallback to MANUAL_REVIEW on mock failures/timeouts&#10;&#10;-Add human-readable error messages to check_results table&#10;&#10;-Update DB schema: add cascades, indexes, reason_code for decisions&#10;&#10;-Fix decision logic: prevent approved_amount generation for REJECTED statuses&#10;&#10;-Add CORS middleware for frontend integration&#10;-Update mock data with 5 valid INN scenarios (approved, counter-offer, rejected, etc.)&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="-Add INN checksum validation using FNS algorithm&#10;-Implement strict Enum for loan purposes to prevent parsing errors&#10;&#10;-Add data enrichment logic to update Company profile from EGRUL mock&#10;&#10;-Improve error handling: fallback to MANUAL_REVIEW on mock failures/timeouts&#10;&#10;-Add human-readable error messages to check_results table&#10;&#10;-Update DB schema: add cascades, indexes, reason_code for decisions&#10;&#10;-Fix decision logic: prevent approved_amount generation for REJECTED statuses&#10;&#10;-Add CORS middleware for frontend integration&#10;-Update mock data with 5 valid INN scenarios (approved, counter-offer, rejected, etc.)&quot;" />
   </component>
 </project>
