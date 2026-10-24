@@ -5,7 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8171917f-2810-4334-8521-a4e8dd179252" name="Changes" comment="- Dockerized the entire application (frontend, orchestrator, mocks) using docker-compose.&#10;- Configured Nginx to serve the frontend and Uvicorn for the backend services.&#10;- Replaced frontend mock logic with real API calls to the Orchestrator (POST /applications, POST /submit, GET /status).&#10;- Implemented async status polling in the UI to display real-time scoring progress (Step 1, 2, 3).&#10;- Setup Docker Volumes (./orchestrator/data:/app/data) to guarantee database persistence.&#10;- Enabled CORS in FastAPI to allow secure frontend-backend communication.&#10;- Added dynamic UI rendering based on backend decisions (Approved, Rejected, Counter-offer).&#10;- Implemented &quot;My Application&quot; feature allowing users to retrieve their latest application status from the database.">
+      <change afterPath="$PROJECT_DIR$/frontend/bank.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mocks/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/orchestrator/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/orchestrator/app/api/bank.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orchestrator/app/api/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/api/client.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orchestrator/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,5 +72,16 @@
     <MESSAGE value="- Add interactive loan calculator and 3D feature cards&#10;- Implement application form modal with INN input&#10;- Integrate fetch API to send POST requests to /api/client/applications&#10;- Add dynamic status rendering (Approved/Rejected) based on orchestrator response&#10;- Apply Alfa-Bank corporate branding styles (fonts, colors, layout)" />
     <MESSAGE value="- Dockerized the entire application (frontend, orchestrator, mocks) using docker-compose.&#10;- Configured Nginx to serve the frontend and Uvicorn for the backend services.&#10;- Replaced frontend mock logic with real API calls to the Orchestrator (POST /applications, POST /submit, GET /status).&#10;- Implemented async status polling in the UI to display real-time scoring progress (Step 1, 2, 3).&#10;- Setup Docker Volumes (./orchestrator/data:/app/data) to guarantee database persistence.&#10;- Enabled CORS in FastAPI to allow secure frontend-backend communication.&#10;- Added dynamic UI rendering based on backend decisions (Approved, Rejected, Counter-offer).&#10;- Implemented &quot;My Application&quot; feature allowing users to retrieve their latest application status from the database." />
     <option name="LAST_COMMIT_MESSAGE" value="- Dockerized the entire application (frontend, orchestrator, mocks) using docker-compose.&#10;- Configured Nginx to serve the frontend and Uvicorn for the backend services.&#10;- Replaced frontend mock logic with real API calls to the Orchestrator (POST /applications, POST /submit, GET /status).&#10;- Implemented async status polling in the UI to display real-time scoring progress (Step 1, 2, 3).&#10;- Setup Docker Volumes (./orchestrator/data:/app/data) to guarantee database persistence.&#10;- Enabled CORS in FastAPI to allow secure frontend-backend communication.&#10;- Added dynamic UI rendering based on backend decisions (Approved, Rejected, Counter-offer).&#10;- Implemented &quot;My Application&quot; feature allowing users to retrieve their latest application status from the database." />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/orchestrator/app/main.py</url>
+          <line>14</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

@@ -531,9 +531,16 @@
     const innError = document.getElementById('inn-error');
     let pollInterval = null;
 
+    // Запоминаем изначальный HTML кружочков, чтобы не ломать их при просмотре истории
+    const originalScoringHTML = stepScoring.innerHTML;
+
     // --- Модальное окно ---
     window.openModal = function () {
       if(pollInterval) clearInterval(pollInterval);
+
+      // Восстанавливаем кружочки при каждом открытии
+      stepScoring.innerHTML = originalScoringHTML;
+
       stepForm.style.display = 'block';
       stepScoring.style.display = 'none';
       document.getElementById('result-box').style.display = 'none';
@@ -542,7 +549,6 @@
       innInput.classList.remove('invalid');
       modal.classList.add('open');
 
-      // Автозаполнение ИНН, если вошел
       const savedInn = localStorage.getItem('smartcredit_inn');
       if (savedInn) innInput.value = savedInn;
     };
@@ -550,6 +556,7 @@
     window.closeModal = function () {
       modal.classList.remove('open');
       if(pollInterval) clearInterval(pollInterval);
+      stepScoring.innerHTML = originalScoringHTML; // Восстанавливаем при закрытии
     };
 
     modal.addEventListener('click', function (e) { if (e.target === modal) window.closeModal(); });
@@ -585,7 +592,6 @@
       for (var i = 0; i < 3; i++) setBadge(i, 'wait');
 
       try {
-        // 1. Создаем заявку в БД
         setBadge(0, 'process');
         const createRes = await fetch(`${API_BASE}/applications`, {
           method: 'POST',
@@ -593,16 +599,14 @@
           body: JSON.stringify({
             client_inn: inn,
             product_code: "CREDIT_LINE",
-            requested_amount: window.calcState.amount,
-            requested_term_months: window.calcState.term,
+            requested_amount: window.calcState ? window.calcState.amount : 1500000,
+            requested_term_months: window.calcState ? window.calcState.term : 12,
             purpose: "WORKING_CAPITAL",
             bki_consent_granted: true
           })
         });
 
         const appData = await createRes.json();
-
-        // Если Pydantic выдал ошибку валидации (неверный ИНН)
         if (!createRes.ok) {
           let msg = "Ошибка валидации данных";
           if (Array.isArray(appData.detail)) msg = appData.detail[0].msg;
@@ -610,24 +614,18 @@
           throw new Error(msg);
         }
 
-        // Сохраняем ID заявки для кнопки "Моя заявка"
         localStorage.setItem('last_app_id', appData.id);
-
-        // 2. Отправляем в конвейер
         await fetch(`${API_BASE}/applications/${appData.id}/submit`, { method: 'POST' });
 
-        // 3. Начинаем опрос статуса
         let stepCounter = 0;
         pollInterval = setInterval(async () => {
           try {
             const statusRes = await fetch(`${API_BASE}/applications/${appData.id}`);
             const statusData = await statusRes.json();
 
-            // Визуальная имитация прохождения шагов
             if (stepCounter === 0 && statusData.status !== 'DRAFT') { setBadge(0, 'success'); setBadge(1, 'process'); stepCounter++; }
             if (stepCounter === 1 && statusData.status === 'SCORING') { setBadge(1, 'success'); setBadge(2, 'process'); stepCounter++; }
 
-            // Если конвейер завершил работу
             const finalStatuses = ['APPROVED', 'REJECTED', 'COUNTER_OFFER', 'MANUAL_REVIEW'];
             if (finalStatuses.includes(statusData.status)) {
               clearInterval(pollInterval);
@@ -655,7 +653,7 @@
         setBadge(0, 'success'); setBadge(1, 'success'); setBadge(2, 'success');
         title.textContent = 'Кредит одобрен!';
         title.style.color = 'var(--color-success)';
-        text.textContent = `Компания "${app.company.company_name}". Одобрено ${window.fmtMoney(app.decision.approved_amount)} ₽ под ${app.decision.approved_rate}% годовых. ${app.decision.reason_text}`;
+        text.textContent = `Компания "${app.company.company_name}". Одобрено ${window.fmtMoney(app.decision.approved_amount)} ₽. ${app.decision.reason_text}`;
       } else if (app.status === 'COUNTER_OFFER') {
         setBadge(0, 'success'); setBadge(1, 'success'); setBadge(2, 'success');
         title.textContent = 'Встречное предложение';
@@ -731,27 +729,55 @@
 
     // --- ПРОВЕРКА СТАТУСА СУЩЕСТВУЮЩЕЙ ЗАЯВКИ ---
     window.checkStatus = async function() {
-      const lastId = localStorage.getItem('last_app_id');
-      if (!lastId) {
-        alert("Вы еще не подавали заявок.");
-        return;
-      }
+      const inn = localStorage.getItem(KEY);
+      if (!inn) { alert("Сначала войдите по ИНН"); return; }
 
       modal.classList.add('open');
       stepForm.style.display = 'none';
       stepScoring.style.display = 'block';
-      for (var i = 0; i < 3; i++) setBadge(i, 'process');
+
+      stepScoring.innerHTML = `
+        <h2 class="modal-title">Мои заявки</h2>
+        <p class="modal-sub">Все ваши заявки по ИНН ${inn}</p>
+        <div id="my-apps-list" style="margin-bottom: 20px; max-height: 400px; overflow-y: auto;"></div>
+        <button class="btn-primary" style="width: 100%;" onclick="closeModal()">Закрыть</button>
+      `;
 
       try {
-        const res = await fetch(`${API_BASE}/applications/${lastId}`);
-        if (res.ok) {
-          const data = await res.json();
-          showResult(data);
-        } else {
-          alert("Заявка не найдена в базе данных.");
-          window.closeModal();
+        const res = await fetch(`${API_BASE}/my-applications?inn=${inn}`);
+        const apps = await res.json();
+        const list = document.getElementById('my-apps-list');
+
+        if (apps.length === 0) {
+          list.innerHTML = '<p style="color: #62657A;">У вас пока нет заявок.</p>';
+          return;
         }
-      } catch(e) { alert("Ошибка связи с сервером"); window.closeModal(); }
+
+        apps.forEach(app => {
+          let color = '#E2E4EA';
+          if (app.status === 'APPROVED') color = '#E8F5E9';
+          if (app.status === 'REJECTED') color = '#FDECEA';
+          if (app.status === 'COUNTER_OFFER') color = '#FFF0E5';
+
+          list.innerHTML += `
+            <div style="padding: 12px; background: ${color}; border-radius: 8px; margin-bottom: 8px; border: 1px solid #D0D3DC;">
+              <div style="display: flex; justify-content: space-between; font-weight: 600;">
+                <span>Заявка #${app.id} на ${window.fmtMoney(app.requested_amount)} ₽</span>
+                <span>${app.status}</span>
+              </div>
+              <div style="font-size: 12px; color: #62657A; margin-top: 4px;">
+                ${new Date(app.created_at).toLocaleString('ru-RU')}
+              </div>
+              ${app.decision ? `<div style="font-size: 12px; margin-top: 4px;">${app.decision.reason_text}</div>` : ''}
+            </div>
+          `;
+        });
+
+      } catch(e) {
+        console.error(e);
+        alert("Ошибка связи с сервером. Проверьте консоль.");
+        window.closeModal();
+      }
     };
 
     loginInput.addEventListener('input', function () { loginInput.value = loginInput.value.replace(/\D/g, ''); });

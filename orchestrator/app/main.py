@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 from app import models
-from app.api import client
+from app.api import client, bank
 
 Base.metadata.create_all(bind=engine)
 
@@ -21,6 +21,7 @@ app.add_middleware(
 
 # <--- ОБЯЗАТЕЛЬНО ДОЛЖНО БЫТЬ
 app.include_router(client.router, prefix="/api/client")
+app.include_router(bank.router, prefix="/api/bank") # <--- Подключаем банк
 
 @app.get("/health", tags=["System"])
 def health_check():

@@ -1,6 +1,6 @@
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
-
 from app.database import get_db
 from app import models, schemas
 from app.core.pipeline import run_pipeline  # <-- Импортируем наш мозг
@@ -60,6 +60,17 @@ async def submit_application(
     return {"message": "Заявка отправлена в обработку", "status": app.status}
 
 
+# ВОТ ЭТУ ФУНКЦИЮ ПОДНИМАЕМ ВЫШЕ
+@router.get("/my-applications", response_model=List[schemas.ApplicationDetailResponse], tags=["Client"])
+def get_all_client_applications(inn: str, db: Session = Depends(get_db)):
+    """Получить все заявки клиента по его ИНН"""
+    company = db.query(models.Company).filter(models.Company.inn == inn).first()
+    if not company:
+        return []
+    return db.query(models.Application).filter(models.Application.company_id == company.id).order_by(models.Application.created_at.desc()).all()
+
+
+# А ЭТА ФУНКЦИЯ ДОЛЖНА БЫТЬ В САМОМ КОНЦЕ
 @router.get("/applications/{application_id}", response_model=schemas.ApplicationDetailResponse, tags=["Client"])
 def get_application(application_id: int, db: Session = Depends(get_db)):
     app = db.query(models.Application).filter(models.Application.id == application_id).first()

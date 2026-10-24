@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Кабинет сотрудника банка</title>
+  <style>
+    /* Используем базовые стили из index.html */
+    body { font-family: -apple-system, 'Segoe UI', sans-serif; background: #F4F5F7; margin: 0; padding: 20px; color: #0B0B0C; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { font-size: 28px; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; background: #FFF; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    th, td { padding: 16px; text-align: left; border-bottom: 1px solid #E2E4EA; }
+    th { background: #F8F9FA; font-weight: 600; color: #62657A; }
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .b-APPROVED { background: #E8F5E9; color: #2E7D32; }
+    .b-REJECTED { background: #FDECEA; color: #EF3124; }
+    .b-COUNTER_OFFER { background: #FFF0E5; color: #F27A23; }
+    .b-MANUAL_REVIEW { background: #FFF3E0; color: #E65100; }
+    .b-DRAFT { background: #E2E4EA; color: #62657A; }
+    .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+    .btn-view { background: #EF3124; color: #FFF; }
+
+    /* Модалка */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100; }
+    .modal.open { display: flex; }
+    .modal-content { background: #FFF; padding: 30px; border-radius: 16px; width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; }
+    .check-item { padding: 12px; background: #F4F5F7; border-radius: 8px; margin-bottom: 8px; }
+    .check-fail { border-left: 4px solid #EF3124; }
+    .check-success { border-left: 4px solid #2E7D32; }
+    pre { background: #282c34; color: #abb2bf; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 12px; }
+    .actions { margin-top: 20px; display: flex; gap: 10px; }
+    .btn-approve { background: #2E7D32; color: white; }
+    .btn-reject { background: #EF3124; color: white; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h1>Дашборд сотрудника банка</h1>
+      <button class="btn" onclick="loadApplications()" style="background: #E2E4EA;">Обновить</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Компания</th>
+          <th>Сумма</th>
+          <th>Дата</th>
+          <th>Статус</th>
+          <th>Действие</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+
+  <!-- Модалка с деталями -->
+  <div class="modal" id="detail-modal">
+    <div class="modal-content">
+      <button class="btn" onclick="closeModal()" style="float: right; background: #E2E4EA;">×</button>
+      <h2 id="m-title">Детали заявки</h2>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+        <div>
+          <p><strong>Компания:</strong> <span id="m-company"></span></p>
+          <p><strong>ИНН:</strong> <span id="m-inn"></span></p>
+          <p><strong>Запрошено:</strong> <span id="m-amount"></span> ₽</p>
+        </div>
+        <div>
+          <p><strong>Статус:</strong> <span id="m-status"></span></p>
+          <p><strong>Решение:</strong> <span id="m-reason"></span></p>
+          <p><strong>Одобрено:</strong> <span id="m-approved"></span> ₽</p>
+        </div>
+      </div>
+
+      <h3>Результаты проверок</h3>
+      <div id="m-checks"></div>
+
+      <!-- Блок для ручного решения -->
+      <div id="manual-actions" class="actions" style="display: none;">
+        <h3 style="width: 100%;">Принять ручное решение</h3>
+        <input type="text" id="manual-reason" placeholder="Комментарий к решению" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 8px;">
+        <button class="btn btn-approve" onclick="manualDecide('APPROVED')">Одобрить</button>
+        <button class="btn btn-reject" onclick="manualDecide('REJECTED')">Отклонить</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:8002/api/bank';
+    let currentAppId = null;
+
+    async function loadApplications() {
+      const res = await fetch(`${API_BASE}/applications`);
+      const apps = await res.json();
+
+      const tbody = document.getElementById('table-body');
+      tbody.innerHTML = '';
+
+      apps.forEach(app => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${app.id}</td>
+          <td>${app.company.company_name}</td>
+          <td>${app.requested_amount.toLocaleString('ru-RU')} ₽</td>
+          <td>${new Date(app.created_at).toLocaleString('ru-RU')}</td>
+          <td><span class="badge b-${app.status}">${app.status}</span></td>
+          <td><button class="btn btn-view" onclick="viewDetails(${app.id})">Смотреть</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function viewDetails(id) {
+      currentAppId = id;
+      const res = await fetch(`${API_BASE}/applications`);
+      const apps = await res.json();
+      const app = apps.find(a => a.id === id);
+
+      document.getElementById('m-title').textContent = `Заявка #${app.id}`;
+      document.getElementById('m-company').textContent = app.company.company_name;
+      document.getElementById('m-inn').textContent = app.company.inn;
+      document.getElementById('m-amount').textContent = app.requested_amount.toLocaleString('ru-RU');
+      document.getElementById('m-status').innerHTML = `<span class="badge b-${app.status}">${app.status}</span>`;
+
+      if (app.decision) {
+        document.getElementById('m-reason').textContent = app.decision.reason_text;
+        document.getElementById('m-approved').textContent = app.decision.approved_amount ? app.decision.approved_amount.toLocaleString('ru-RU') : '—';
+      } else {
+        document.getElementById('m-reason').textContent = 'Ожидает решения';
+        document.getElementById('m-approved').textContent = '—';
+      }
+
+      // Рендер проверок
+      const checksDiv = document.getElementById('m-checks');
+      checksDiv.innerHTML = '';
+      app.checks.forEach(check => {
+        const isSuccess = check.execution_status === 'SUCCESS';
+        const div = document.createElement('div');
+        div.className = `check-item ${isSuccess ? 'check-success' : 'check-fail'}`;
+        div.innerHTML = `
+          <strong>${check.check_type.toUpperCase()}</strong> — ${check.execution_status}
+          ${check.error_message ? `<br><span style="color: #EF3124">${check.error_message}</span>` : ''}
+          <pre>${JSON.stringify(check.raw_response, null, 2)}</pre>
+        `;
+        checksDiv.appendChild(div);
+      });
+
+      // Показываем кнопки ручного решения только если статус MANUAL_REVIEW
+      document.getElementById('manual-actions').style.display =
+        (app.status === 'MANUAL_REVIEW') ? 'flex' : 'none';
+
+      document.getElementById('detail-modal').classList.add('open');
+    }
+
+    async function manualDecide(decision) {
+      const reason = document.getElementById('manual-reason').value || 'Решение сотрудника банка';
+
+      const res = await fetch(`${API_BASE}/applications/${currentAppId}/manual-decision`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ decision_type: decision, reason: reason })
+      });
+
+      if (res.ok) {
+        alert('Решение принято!');
+        closeModal();
+        loadApplications(); // Обновляем таблицу
+      } else {
+        const err = await res.json();
+        alert('Ошибка: ' + JSON.stringify(err.detail));
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('detail-modal').classList.remove('open');
+    }
+
+    // Загружаем при старте
+    loadApplications();
+  </script>
+</body>
+</html>
