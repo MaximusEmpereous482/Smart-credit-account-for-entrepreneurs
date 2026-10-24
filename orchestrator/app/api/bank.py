@@ -31,26 +31,58 @@ def make_manual_decision(
         req: ManualDecisionRequest,
         db: Session = Depends(get_db)
 ):
-    """Принять ручное решение по заявке (например, которая висит в MANUAL_REVIEW)"""
+    """Принять ручное решение по заявке (обновляет существующее или создает новое)"""
     app = db.query(models.Application).filter(models.Application.id == application_id).first()
     if not app:
         raise HTTPException(status_code=404, detail="Заявка не найдена")
 
-    if app.status not in ["MANUAL_REVIEW", "SUBMITTED", "SCORING"]:
-        raise HTTPException(status_code=400, detail="По этой заявке уже принято решение")
+    if app.status in ["APPROVED", "REJECTED", "COUNTER_OFFER"] and app.decision:
+        raise HTTPException(status_code=400, detail="По этой заявке уже принято финальное решение")
 
-    # Используем функцию из pipeline, но с другим актором
-    make_decision(
-        db, app,
-        decision_type=req.decision_type,
-        reason=req.reason,
-        amount=app.requested_amount if req.decision_type == "APPROVED" else None
-    )
+    final_amount = app.requested_amount if req.decision_type == "APPROVED" else None
+    final_term = app.requested_term_months if req.decision_type == "APPROVED" else None
+    final_rate = 18.5 if req.decision_type == "APPROVED" else None
 
-    # Перезаписываем actor в решении на сотрудника банка
     decision = db.query(models.Decision).filter(models.Decision.application_id == app.id).first()
+
     if decision:
+
+        decision.decision_type = req.decision_type
+        decision.approved_amount = final_amount
+        decision.approved_term_months = final_term
+        decision.approved_rate = final_rate
+        decision.reason_code = "MANUAL_OVERRIDE"
+        decision.reason_text = req.reason
         decision.decided_by = "BANK_EMPLOYEE"
-        db.commit()
+    else:
+
+        decision = models.Decision(
+            application_id=app.id,
+            decision_type=req.decision_type,
+            approved_amount=final_amount,
+            approved_term_months=final_term,
+            approved_rate=final_rate,
+            reason_code="MANUAL_DECISION",
+            reason_text=req.reason,
+            decided_by="BANK_EMPLOYEE"
+        )
+        db.add(decision)
+
+    old_status = app.status
+    app.status = req.decision_type
+    app.current_step_name = "Решение принято сотрудником банка"
+
+    audit = models.AuditEvent(
+        application_id=app.id,
+        actor="BANK_EMPLOYEE",
+        action=f"MANUAL_DECISION_{req.decision_type}",
+        old_status=old_status,
+        new_status=req.decision_type,
+        details={"reason": req.reason}
+    )
+    db.add(audit)
+
+    db.commit()
+    db.refresh(app)
 
     return {"message": "Решение успешно принято", "status": app.status}
