@@ -8,6 +8,8 @@ markdown
 
 ```bash
 docker compose up --build -d
+```
+
 Доступные сервисы после запуска:
 Сервис	URL
 Клиентский сайт (Лендинг и кабинет)	http://localhost:8080

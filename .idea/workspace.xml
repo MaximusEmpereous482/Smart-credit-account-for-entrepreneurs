@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8171917f-2810-4334-8521-a4e8dd179252" name="Changes" comment="added docks and README.md">
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/THIRD_PARTY_NOTICES" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/architecture.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/state_diagram.md" afterDir="false" />
+    <list default="true" id="8171917f-2810-4334-8521-a4e8dd179252" name="Changes" comment="changing">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,7 +73,8 @@
     <MESSAGE value="feat: stable release with XAI scoring, gatekeeping, and bank dashboard&#10;&#10;- **Transparent Scoring (XAI)**: Added progress bars with detailed breakdown of 6 scoring categories for clients on APPROVED/COUNTER_OFFER/REJECTED screens.&#10;- **Bank Dashboard XAI**: Extended `bank.html` to display scoring breakdown with colored progress bars for bank employees. Added fallback block for manually approved applications where automated scoring failed.&#10;- **Gatekeeping**: Enforced mandatory login (INN + password) before submitting applications. If not authenticated, the modal redirects to login and resumes after successful authentication.&#10;- **Read-only INN**: After login, the INN field in the application form is locked (read-only, grayed out) to prevent identity spoofing.&#10;- **&quot;My Scoring&quot; Button**: Added to the navigation menu; appears only if the client has at least one submitted application (async verification against the database to persist across sessions).&#10;- **Counter-Offer Acceptance**: Added the ability to accept a counter-offer from the &quot;My Applications&quot; list (previously only possible immediately after submission).&#10;- **&quot;Request Data&quot; Button**: Added a dummy button in the bank dashboard to simulate requesting additional documents from the client.&#10;- **Stability Fixes**: Fixed critical JS syntax errors that froze the UI (extra braces, missing `closeModal` function). &#10;- **Test Data**: Added 3 new test personas (`7701234560`, `7734567808`, `7812345675`) to cover all score grades (A, B) and liquidation scenarios." />
     <MESSAGE value="feat: add loan purpose selection and dynamic product recommendation&#10;&#10;- Added a &quot;Loan Purpose&quot; dropdown to the application form in `index.html` (working capital, equipment, real estate, investment, cash gap, refinancing).&#10;- Updated `LoanPurpose` enum in `schemas.py` to validate new purpose types (INVESTMENT, CASH_GAP) and prevent 422 errors.&#10;- Enhanced `pipeline.py` logic to dynamically generate the recommended banking product based on the client's selected purpose.&#10;- Updated `openModal` JS function to reset the purpose dropdown to default (&quot;WORKING_CAPITAL&quot;) every time the form is opened.&#10;- Frontend now correctly passes the selected purpose in the POST request payload." />
     <MESSAGE value="added docks and README.md" />
-    <option name="LAST_COMMIT_MESSAGE" value="added docks and README.md" />
+    <MESSAGE value="changing" />
+    <option name="LAST_COMMIT_MESSAGE" value="changing" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
