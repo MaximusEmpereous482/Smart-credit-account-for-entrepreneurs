@@ -104,6 +104,12 @@ def make_decision(db: Session, app: models.Application, decision_type: str, reas
             product_type_ru = "Овердрафт / Кредитная линия"
         elif app.purpose == "REAL_ESTATE":
             product_type_ru = "Инвестиционный кредит (недвижимость)"
+        elif app.purpose == "INVESTMENT":
+            product_type_ru = "Инвестиционный кредит на развитие бизнеса"
+        elif app.purpose == "CASH_GAP":
+            product_type_ru = "Кредит на закрытие кассового разрыва (Овердрафт)"
+        elif app.purpose == "REFINANCING":
+            product_type_ru = "Рефинансирование кредита"
         product_info = f" Рекомендуемый продукт: {product_type_ru}."
 
         # 4. Если это контроффер, сумма уже урезана внутри terms

@@ -23,10 +23,12 @@ class CompanyResponse(CompanyBase):
 # 2. СХЕМЫ ДЛЯ ЗАЯВКИ (Application)
 # ==========================================
 class LoanPurpose(str, Enum):
-    EQUIPMENT = "EQUIPMENT"      # Покупка оборудования
-    WORKING_CAPITAL = "WORKING_CAPITAL"  # Пополнение оборотных средств
-    REAL_ESTATE = "REAL_ESTATE"  # Покупка недвижимости
-    REFINANCING = "REFINANCING"  # Рефинансирование
+    EQUIPMENT = "EQUIPMENT"
+    WORKING_CAPITAL = "WORKING_CAPITAL"
+    REAL_ESTATE = "REAL_ESTATE"
+    REFINANCING = "REFINANCING"
+    INVESTMENT = "INVESTMENT"
+    CASH_GAP = "CASH_GAP"
 
 
 class ApplicationCreate(BaseModel):

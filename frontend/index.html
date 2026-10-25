@@ -398,6 +398,18 @@
     <div class="modal-card">
       <button class="modal-close" onclick="closeModal()" aria-label="Закрыть">×</button>
 
+  <div class="form-group">
+          <label class="form-label" for="purpose-input">Цель кредита</label>
+          <select class="form-input" id="purpose-input" style="cursor: pointer; background-color: #fff;">
+            <option value="WORKING_CAPITAL">Пополнение оборотных средств</option>
+            <option value="EQUIPMENT">Покупка оборудования</option>
+            <option value="REAL_ESTATE">Покупка недвижимости</option>
+            <option value="INVESTMENT">Инвестиции в развитие бизнеса</option>
+            <option value="CASH_GAP">Закрытие кассового разрыва</option>
+            <option value="REFINANCING">Рефинансирование</option>
+          </select>
+        </div>
+
       <div id="step-form">
         <h2 class="modal-title">Экспресс-заявка</h2>
         <p class="modal-sub">Укажите параметры кредита и ИНН — остальное проверим автоматически.</p>
@@ -660,6 +672,8 @@
       for (var i = 0; i < 3; i++) setBadge(i, 'wait');
       innError.textContent = '';
       innInput.classList.remove('invalid');
+      const purposeSelect = document.getElementById('purpose-input');
+      if (purposeSelect) purposeSelect.value = "WORKING_CAPITAL";
       modal.classList.add('open');
 
       // Блокируем ИНН
@@ -696,6 +710,10 @@
         innError.textContent = 'ИНН должен содержать 10 или 12 цифр';
         return;
       }
+      // Получаем выбранную цель
+      const purposeSelect = document.getElementById('purpose-input');
+      const selectedPurpose = purposeSelect ? purposeSelect.value : "WORKING_CAPITAL";
+
       document.getElementById('m-amount-input').blur();
       document.getElementById('m-term-input').blur();
       stepForm.style.display = 'none';
@@ -712,7 +730,7 @@
             product_code: "CREDIT_LINE",
             requested_amount: window.calcState ? window.calcState.amount : 1500000,
             requested_term_months: window.calcState ? window.calcState.term : 12,
-            purpose: "WORKING_CAPITAL",
+            purpose: selectedPurpose,
             bki_consent_granted: true
           })
         });
