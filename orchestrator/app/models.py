@@ -62,7 +62,10 @@ class Decision(Base):
     approved_amount = Column(Float, nullable=True)
     approved_term_months = Column(Integer, nullable=True)
     approved_rate = Column(Float, nullable=True)
-    reason_code = Column(String(50), nullable=True)  # <--- ДОБАВИЛИ: Код для аналитики
+    penalty_rate = Column(Float, nullable=True)            # Пени (% в день)
+    issuance_fee_percent = Column(Float, nullable=True)    # Комиссия за выдачу (%)
+    monthly_payment = Column(Float, nullable=True)         # Ежемесячный платеж
+    reason_code = Column(String(50), nullable=True)
     reason_text = Column(Text, nullable=True)
     decided_by = Column(String(50), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)

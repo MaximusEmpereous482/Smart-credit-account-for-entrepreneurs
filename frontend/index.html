@@ -723,22 +723,42 @@
     function showResult(app) {
       var title = document.getElementById('result-title');
       var text = document.getElementById('result-text');
+
       if (app.status === 'APPROVED') {
         setBadge(0, 'success'); setBadge(1, 'success'); setBadge(2, 'success');
-        title.textContent = 'Кредит одобрен!'; title.style.color = 'var(--color-success)';
-        text.textContent = `Компания "${app.company.company_name}". Одобрено ${window.fmtMoney(app.decision.approved_amount)} ₽. ${app.decision.reason_text}`;
+        title.textContent = 'Кредит одобрен!';
+        title.style.color = 'var(--color-success)';
+        // ИСПОЛЬЗУЕМ innerHTML, чтобы добавить переносы строк и жирный шрифт
+        text.innerHTML = `
+          <strong>Компания:</strong> ${app.company.company_name}<br><br>
+          <strong>Сумма:</strong> ${window.fmtMoney(app.decision.approved_amount)} ₽<br>
+          <strong>Ставка:</strong> ${app.decision.approved_rate}% годовых (Премиум-условия)<br>
+          <strong>Ежемесячный платеж:</strong> ${window.fmtMoney(app.decision.monthly_payment)} ₽<br>
+          <strong>Пени за просрочку:</strong> ${app.decision.penalty_rate}% в день<br>
+          <div style="margin-top: 10px; font-size: 13px; color: #62657A;">${app.decision.reason_text}</div>
+        `;
       } else if (app.status === 'COUNTER_OFFER') {
         setBadge(0, 'success'); setBadge(1, 'success'); setBadge(2, 'success');
-        title.textContent = 'Встречное предложение'; title.style.color = 'var(--color-orange)';
-        text.textContent = `Компания "${app.company.company_name}". Готовы одобрить ${window.fmtMoney(app.decision.approved_amount)} ₽. ${app.decision.reason_text}`;
+        title.textContent = 'Встречное предложение';
+        title.style.color = 'var(--color-orange)';
+        text.innerHTML = `
+          <strong>Компания:</strong> ${app.company.company_name}<br><br>
+          <strong>Одобренная сумма:</strong> ${window.fmtMoney(app.decision.approved_amount)} ₽ (70% от запрошенной)<br>
+          <strong>Ставка:</strong> ${app.decision.approved_rate}% годовых (Базовые условия)<br>
+          <strong>Ежемесячный платеж:</strong> ${window.fmtMoney(app.decision.monthly_payment)} ₽<br>
+          <strong>Комиссия за выдачу:</strong> ${app.decision.issuance_fee_percent}%<br>
+          <div style="margin-top: 10px; font-size: 13px; color: #62657A;">${app.decision.reason_text}</div>
+        `;
       } else if (app.status === 'MANUAL_REVIEW') {
         setBadge(0, 'success'); setBadge(1, 'success'); setBadge(2, 'success');
-        title.textContent = 'На ручной проверке'; title.style.color = 'var(--color-orange)';
+        title.textContent = 'На ручной проверке';
+        title.style.color = 'var(--color-orange)';
         text.textContent = app.decision ? app.decision.reason_text : 'Заявка передана специалисту.';
       } else {
         const isStop = app.decision && app.decision.reason_code === 'STOP_FACTOR';
         if (isStop) { setBadge(0, 'fail'); } else { setBadge(0, 'success'); setBadge(1, 'success'); setBadge(2, 'fail'); }
-        title.textContent = 'В кредите отказано'; title.style.color = 'var(--color-primary)';
+        title.textContent = 'В кредите отказано';
+        title.style.color = 'var(--color-primary)';
         text.textContent = app.decision ? app.decision.reason_text : 'К сожалению, заявка отклонена.';
       }
       document.getElementById('result-box').style.display = 'block';

@@ -98,7 +98,10 @@ class DecisionResponse(BaseModel):
     decision_type: str
     approved_amount: Optional[float] = None
     approved_rate: Optional[float] = None
-    reason_code: Optional[str] = None  # <--- ДОБАВИТЬ
+    penalty_rate: Optional[float] = None
+    issuance_fee_percent: Optional[float] = None
+    monthly_payment: Optional[float] = None
+    reason_code: Optional[str] = None
     reason_text: Optional[str] = None
     decided_by: str
     created_at: datetime

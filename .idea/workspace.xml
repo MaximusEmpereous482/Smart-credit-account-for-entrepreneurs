@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8171917f-2810-4334-8521-a4e8dd179252" name="Changes" comment="feat: implement bank dashboard, client history, and optimize scoring pipeline&#10;&#10;- **Bank Dashboard &amp; API**: Created a new `bank.html` interface and `/api/bank` endpoints. Bank employees can now view all applications, inspect raw JSON responses from external mocks, and manually approve or reject applications stuck in `MANUAL_REVIEW`.&#10;- **Client Application History**: Added a `/api/client/my-applications` endpoint and updated the frontend UI. Users can now view a comprehensive, color-coded history of all their past applications and current statuses.&#10;- **Pipeline Optimization**: Refactored the `run_pipeline` logic. The ZSK (Central Bank red zone) stop-factor check now occurs *before* the expensive BKI (Credit History) request. This prevents unnecessary API calls and instantly rejects high-risk clients.&#10;- **Bug Fixes &amp; UI Improvements**: &#10;  - Fixed a critical FastAPI routing conflict (`/my-applications` vs `/applications/{id}`) that caused 422 errors.&#10;  - Fixed a JavaScript bug where viewing the application history would permanently break the &quot;Submit Application&quot; modal.&#10;  - Updated mock data (`bki.json`) for consistency.&#10;- **Docker**: Rebuilt orchestrator and frontend containers to synchronize the new API endpoints and UI changes.">
+    <list default="true" id="8171917f-2810-4334-8521-a4e8dd179252" name="Changes" comment="- Added a dummy password field to the client login modal for better UX and security simulation.&#10;- Fixed a critical JavaScript bug where viewing application history broke the &quot;Submit Application&quot; modal and made buttons unclickable.&#10;- Fixed FastAPI routing conflict (`/my-applications` vs `/applications/{id}`) that caused 422 errors.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/app/api/bank.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/api/bank.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orchestrator/app/core/pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/core/pipeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orchestrator/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orchestrator/app/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/app/schemas.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,17 +38,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/User/PycharmProjects/Smart-credit-account-for-entrepreneurs/frontend&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "Python.main.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/User/PycharmProjects/Smart-credit-account-for-entrepreneurs/frontend",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\User\PycharmProjects\Smart-credit-account-for-entrepreneurs\frontend" />
@@ -68,7 +69,8 @@
     <MESSAGE value="- Add interactive loan calculator and 3D feature cards&#10;- Implement application form modal with INN input&#10;- Integrate fetch API to send POST requests to /api/client/applications&#10;- Add dynamic status rendering (Approved/Rejected) based on orchestrator response&#10;- Apply Alfa-Bank corporate branding styles (fonts, colors, layout)" />
     <MESSAGE value="- Dockerized the entire application (frontend, orchestrator, mocks) using docker-compose.&#10;- Configured Nginx to serve the frontend and Uvicorn for the backend services.&#10;- Replaced frontend mock logic with real API calls to the Orchestrator (POST /applications, POST /submit, GET /status).&#10;- Implemented async status polling in the UI to display real-time scoring progress (Step 1, 2, 3).&#10;- Setup Docker Volumes (./orchestrator/data:/app/data) to guarantee database persistence.&#10;- Enabled CORS in FastAPI to allow secure frontend-backend communication.&#10;- Added dynamic UI rendering based on backend decisions (Approved, Rejected, Counter-offer).&#10;- Implemented &quot;My Application&quot; feature allowing users to retrieve their latest application status from the database." />
     <MESSAGE value="feat: implement bank dashboard, client history, and optimize scoring pipeline&#10;&#10;- **Bank Dashboard &amp; API**: Created a new `bank.html` interface and `/api/bank` endpoints. Bank employees can now view all applications, inspect raw JSON responses from external mocks, and manually approve or reject applications stuck in `MANUAL_REVIEW`.&#10;- **Client Application History**: Added a `/api/client/my-applications` endpoint and updated the frontend UI. Users can now view a comprehensive, color-coded history of all their past applications and current statuses.&#10;- **Pipeline Optimization**: Refactored the `run_pipeline` logic. The ZSK (Central Bank red zone) stop-factor check now occurs *before* the expensive BKI (Credit History) request. This prevents unnecessary API calls and instantly rejects high-risk clients.&#10;- **Bug Fixes &amp; UI Improvements**: &#10;  - Fixed a critical FastAPI routing conflict (`/my-applications` vs `/applications/{id}`) that caused 422 errors.&#10;  - Fixed a JavaScript bug where viewing the application history would permanently break the &quot;Submit Application&quot; modal.&#10;  - Updated mock data (`bki.json`) for consistency.&#10;- **Docker**: Rebuilt orchestrator and frontend containers to synchronize the new API endpoints and UI changes." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: implement bank dashboard, client history, and optimize scoring pipeline&#10;&#10;- **Bank Dashboard &amp; API**: Created a new `bank.html` interface and `/api/bank` endpoints. Bank employees can now view all applications, inspect raw JSON responses from external mocks, and manually approve or reject applications stuck in `MANUAL_REVIEW`.&#10;- **Client Application History**: Added a `/api/client/my-applications` endpoint and updated the frontend UI. Users can now view a comprehensive, color-coded history of all their past applications and current statuses.&#10;- **Pipeline Optimization**: Refactored the `run_pipeline` logic. The ZSK (Central Bank red zone) stop-factor check now occurs *before* the expensive BKI (Credit History) request. This prevents unnecessary API calls and instantly rejects high-risk clients.&#10;- **Bug Fixes &amp; UI Improvements**: &#10;  - Fixed a critical FastAPI routing conflict (`/my-applications` vs `/applications/{id}`) that caused 422 errors.&#10;  - Fixed a JavaScript bug where viewing the application history would permanently break the &quot;Submit Application&quot; modal.&#10;  - Updated mock data (`bki.json`) for consistency.&#10;- **Docker**: Rebuilt orchestrator and frontend containers to synchronize the new API endpoints and UI changes." />
+    <MESSAGE value="- Added a dummy password field to the client login modal for better UX and security simulation.&#10;- Fixed a critical JavaScript bug where viewing application history broke the &quot;Submit Application&quot; modal and made buttons unclickable.&#10;- Fixed FastAPI routing conflict (`/my-applications` vs `/applications/{id}`) that caused 422 errors." />
+    <option name="LAST_COMMIT_MESSAGE" value="- Added a dummy password field to the client login modal for better UX and security simulation.&#10;- Fixed a critical JavaScript bug where viewing application history broke the &quot;Submit Application&quot; modal and made buttons unclickable.&#10;- Fixed FastAPI routing conflict (`/my-applications` vs `/applications/{id}`) that caused 422 errors." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

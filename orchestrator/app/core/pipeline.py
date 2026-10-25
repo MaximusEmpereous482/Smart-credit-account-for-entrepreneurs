@@ -15,7 +15,6 @@ def save_check(db: Session, app_id: int, check_type: str, status: str, raw_respo
     error_msg = None
     if is_error:
         error_code = raw_response.get("__error__")
-        # Расшифровываем коды ошибок в человеческий язык
         if error_code == "CONSENT_REQUIRED":
             error_msg = "Клиент не дал согласие на запрос кредитной истории (БКИ)"
         elif error_code == "TIMEOUT":
@@ -31,7 +30,7 @@ def save_check(db: Session, app_id: int, check_type: str, status: str, raw_respo
         application_id=app_id,
         check_type=check_type,
         execution_status=execution_status,
-        error_message=error_msg,  # <--- Сохраняем текст
+        error_message=error_msg,
         raw_response=raw_response
     )
     db.add(check)
@@ -54,16 +53,50 @@ def update_status(db: Session, app: models.Application, new_status: str, step_na
     db.commit()
 
 
+def calculate_loan_terms(score: int, requested_amount: float, term_months: int) -> dict:
+    """Risk-Based Pricing по реальным тарифам Альфа-Банка"""
+    if score >= 80:
+        rate = 14.0  # Ставка со скидкой (премиум)
+        penalty = 0.1  # Пени 0.1% в день
+        fee = 0.0  # Без комиссии
+        amount = requested_amount
+    elif score >= 60:
+        rate = 23.5  # Базовая ставка
+        penalty = 0.5  # Пени 0.5% в день
+        fee = 1.0  # Комиссия 1%
+        amount = requested_amount * 0.7  # Урезаем сумму на 30%
+    else:
+        return {"rate": None, "penalty": None, "fee": None, "amount": 0, "payment": None}
+
+    # Расчет аннуитетного платежа
+    monthly_rate = rate / 100 / 12
+    if monthly_rate > 0:
+        payment = amount * monthly_rate / (1 - (1 + monthly_rate) ** -term_months)
+    else:
+        payment = amount / term_months
+
+    return {
+        "rate": rate,
+        "penalty": penalty,
+        "fee": fee,
+        "amount": amount,
+        "payment": round(payment, 2)
+    }
+
+
 def make_decision(db: Session, app: models.Application, decision_type: str, reason: str, amount: float = None,
-                  reason_code: str = "GENERAL"):
+                  reason_code: str = "GENERAL", score: int = 0):
     app.status = decision_type
     app.current_step_name = "Решение принято"
 
-    if decision_type == "REJECTED" or decision_type == "MANUAL_REVIEW":
-        final_amount = None
+    if decision_type in ["REJECTED", "MANUAL_REVIEW"]:
+        terms = {"rate": None, "penalty": None, "fee": None, "amount": None, "payment": None}
         product_info = ""
     else:
-        final_amount = amount if amount else app.requested_amount
+        # Считаем условия на основе скоринга
+        terms = calculate_loan_terms(score, app.requested_amount, app.requested_term_months)
+
+        # Подбираем название продукта
         product_type_ru = "Универсальный кредит"
         if app.purpose == "EQUIPMENT":
             product_type_ru = "Целевой кредит на оборудование"
@@ -73,19 +106,25 @@ def make_decision(db: Session, app: models.Application, decision_type: str, reas
             product_type_ru = "Инвестиционный кредит (недвижимость)"
         product_info = f" Рекомендуемый продукт: {product_type_ru}."
 
+        # Если это контроффер, берем урезанную сумму из terms
+        if decision_type == "COUNTER_OFFER":
+            amount = terms["amount"]
+
     decision = models.Decision(
         application_id=app.id,
         decision_type=decision_type,
-        reason_code=reason_code,  # <--- ДОБАВИЛИ
+        reason_code=reason_code,
         reason_text=f"{reason}.{product_info}".strip(),
-        approved_amount=final_amount,
+        approved_amount=amount if amount else terms["amount"],
         approved_term_months=app.requested_term_months if decision_type not in ["REJECTED", "MANUAL_REVIEW"] else None,
-        approved_rate=18.5 if decision_type not in ["REJECTED", "MANUAL_REVIEW"] else None,
+        approved_rate=terms["rate"],
+        penalty_rate=terms["penalty"],
+        issuance_fee_percent=terms["fee"],
+        monthly_payment=terms["payment"],
         decided_by="SYSTEM"
     )
     db.add(decision)
 
-    # Также добавляем событие в аудит о принятом решении
     audit = models.AuditEvent(
         application_id=app.id,
         actor="SYSTEM",
@@ -103,7 +142,7 @@ def calculate_scoring(egrul, zsk, bki, fns, risk) -> tuple[int, str]:
     """Точная реализация модели БА (от 0 до 100 баллов)"""
     score = 0
 
-    # МГНОВЕННЫЙ ОТКАЗ (СТОП-ФАКТОРЫ)1
+    # МГНОВЕННЫЙ ОТКАЗ (СТОП-ФАКТОРЫ)
     founders = egrul.get("founders", [])
     bankrupt_founders = risk.get("bankrupt_founders", [])
     for founder in founders:
@@ -136,7 +175,6 @@ def calculate_scoring(egrul, zsk, bki, fns, risk) -> tuple[int, str]:
         score += 5
 
     # 2. ФИНАНСОВОЕ ЗДОРОВЬЕ (до 25)
-    # Для этого поля мы добавим is_growing в моки
     fin = fns.get("financials", {}).get("years", [{}])[0]
     profit = fin.get("net_profit", 0)
     revenue = fin.get("revenue", 1)
@@ -156,7 +194,6 @@ def calculate_scoring(egrul, zsk, bki, fns, risk) -> tuple[int, str]:
         score += 25
     elif 0.20 <= dti <= 0.40:
         score += 15
-    # Если > 40%, баллы не начисляются (0)
 
     # 4. НАЛОГОВАЯ ДИСЦИПЛИНА (до 15)
     arrears_amount = fns.get("taxes", {}).get("arrears", {}).get("amount", 0)
@@ -164,7 +201,6 @@ def calculate_scoring(egrul, zsk, bki, fns, risk) -> tuple[int, str]:
         score += 15
     elif arrears_amount < 10000:
         score += 5
-    # Если больше 10к, 0 баллов (но стоп-фактора нет)
 
     # 5. СУДЕБНЫЕ РИСКИ (до 10)
     cases = risk.get("sources", {}).get("arbitration_cases", {}).get("as_defendant", 0)
@@ -172,7 +208,6 @@ def calculate_scoring(egrul, zsk, bki, fns, risk) -> tuple[int, str]:
         score += 10
     elif 3 <= cases <= 5:
         score += 5
-    # Если больше 5, 0 баллов
 
     # 6. НАДЕЖНОСТЬ БЕНЕФИЦИАРА (до 15)
     director_score = bki.get("director_bki_score", 0)
@@ -180,7 +215,6 @@ def calculate_scoring(egrul, zsk, bki, fns, risk) -> tuple[int, str]:
         score += 15
     elif 600 <= director_score <= 700:
         score += 5
-    # Если меньше 600 или есть микрозаймы, 0 баллов
 
     return score, ""
 
@@ -194,66 +228,56 @@ async def run_pipeline(application_id: int):
 
         update_status(db, app, "DATA_ENRICHMENT", "Сбор данных из внешних источников")
 
-        # --- Запросы к мокам ---
         egrul = await mocks_client.get_egrul(inn)
 
-        # НОВОЕ: Обогащение данных компании (Data Enrichment)
         if "__error__" not in egrul:
             company = app.company
             company.company_name = egrul.get("short_name", company.company_name)
             company.ogrn = egrul.get("ogrn")
             company.egrul_status = egrul.get("status")
             company.okved_main = egrul.get("okved_main", {}).get("code")
-            # Достаем ФИО директора из массива management
             management = egrul.get("management", [])
             if management:
                 company.director_name = management[0].get("full_name")
 
-            # Парсим дату регистрации
             reg_date_str = egrul.get("registration_date")
             if reg_date_str:
-                from datetime import datetime
                 try:
                     company.registration_date = datetime.strptime(reg_date_str, "%Y-%m-%d")
                 except ValueError:
                     pass
-            db.commit()  # Сохраняем обновленные данные компании в БД
+            db.commit()
 
         save_check(db, app.id, "egrul", "SUCCESS", egrul)
         if "__error__" in egrul:
-            return make_decision(db, app, "MANUAL_REVIEW",
-                                 "Ошибка получения данных из ЕГРЮЛ. Требуется ручная проверка.",
+            return make_decision(db, app, "MANUAL_REVIEW", "Ошибка получения данных из ЕГРЮЛ.",
                                  reason_code="EGRUL_ERROR")
 
         zsk = await mocks_client.get_zsk(inn)
         save_check(db, app.id, "zsk", "SUCCESS", zsk)
         if "__error__" in zsk:
-            return make_decision(db, app, "MANUAL_REVIEW", "Ошибка получения данных ЗСК. Требуется ручная проверка.",
-                                 reason_code="ZSK_ERROR")
+            return make_decision(db, app, "MANUAL_REVIEW", "Ошибка получения данных ЗСК.", reason_code="ZSK_ERROR")
 
         fns = await mocks_client.get_fns(inn)
         save_check(db, app.id, "fns", "SUCCESS", fns)
         if "__error__" in fns:
-            return make_decision(db, app, "MANUAL_REVIEW", "Ошибка получения данных из ФНС. Требуется ручная проверка.",
-                                 reason_code="FNS_ERROR")
+            return make_decision(db, app, "MANUAL_REVIEW", "Ошибка получения данных из ФНС.", reason_code="FNS_ERROR")
 
         risk = await mocks_client.get_risk_flags(inn)
         save_check(db, app.id, "risk", "SUCCESS", risk)
         if "__error__" in risk:
-            return make_decision(db, app, "MANUAL_REVIEW",
-                                 "Ошибка получения данных о судебных рисках. Требуется ручная проверка.",
+            return make_decision(db, app, "MANUAL_REVIEW", "Ошибка получения данных о судебных рисках.",
                                  reason_code="RISK_ERROR")
 
         if app.bki_consent_granted:
             bki = await mocks_client.get_bki(inn)
             save_check(db, app.id, "bki", "SUCCESS", bki)
             if "__error__" in bki:
-                return make_decision(db, app, "MANUAL_REVIEW",
-                                     "Ошибка получения кредитной истории (БКИ). Требуется ручная проверка.",
+                return make_decision(db, app, "MANUAL_REVIEW", "Ошибка получения кредитной истории (БКИ).",
                                      reason_code="BKI_ERROR")
         else:
             bki = {"__error__": "CONSENT_REQUIRED"}
-            save_check(db, app.id, "bki", "FAILED", bki)  # Сохраняем как FAILED
+            save_check(db, app.id, "bki", "FAILED", bki)
 
         update_status(db, app, "SCORING", "Валидация и скоринг")
         score, reject_reason = calculate_scoring(egrul, zsk, bki, fns, risk)
@@ -262,21 +286,17 @@ async def run_pipeline(application_id: int):
 
         # --- Матрица решений ---
         if reject_reason:
-            make_decision(db, app, "REJECTED", reject_reason, reason_code="STOP_FACTOR")
-
+            make_decision(db, app, "REJECTED", reject_reason, reason_code="STOP_FACTOR", score=0)
         elif score >= 80:
             make_decision(db, app, "APPROVED", f"Кредит одобрен. Скоринг: {score}/100", amount=app.requested_amount,
-                          reason_code="APPROVED_BY_SCORING")
-
+                          reason_code="APPROVED_BY_SCORING", score=score)
         elif score >= 60:
-            new_amount = app.requested_amount * 0.7
             make_decision(db, app, "COUNTER_OFFER",
-                          f"Мы готовы профинансировать вас на 70% от суммы. Скоринг: {score}/100.", amount=new_amount,
-                          reason_code="REDUCED_AMOUNT")
-
+                          f"Мы готовы профинансировать вас на 70% от суммы. Скоринг: {score}/100.",
+                          reason_code="REDUCED_AMOUNT", score=score)
         else:
-            main_reason = "Высокая кредитная нагрузка или недостаточный срок ведения бизнеса"
-            make_decision(db, app, "REJECTED", f"Отказ. Скоринг: {score}/100. {main_reason}", reason_code="LOW_SCORE")
+            make_decision(db, app, "REJECTED", f"Отказ. Скоринг: {score}/100. Высокая кредитная нагрузка.",
+                          reason_code="LOW_SCORE", score=0)
 
     except Exception as e:
         logger.error(f"Ошибка в конвейере: {str(e)}")
