@@ -104,6 +104,7 @@ class DecisionResponse(BaseModel):
     reason_code: Optional[str] = None
     reason_text: Optional[str] = None
     decided_by: str
+    scoring_details: Optional[list] = None
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

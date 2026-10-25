@@ -81,18 +81,22 @@ def calculate_loan_terms(score: int, requested_amount: float, term_months: int) 
 
 
 def make_decision(db: Session, app: models.Application, decision_type: str, reason: str, amount: float = None,
-                  reason_code: str = "GENERAL", score: int = 0):
+                  reason_code: str = "GENERAL", score: int = 0, details: list = None):
+    """
+    Принимает решение по заявке, рассчитывает условия и сохраняет всё в БД.
+    """
     app.status = decision_type
     app.current_step_name = "Решение принято"
 
+    # 1. Если отказ или ручная проверка — финансовые условия не рассчитываем
     if decision_type in ["REJECTED", "MANUAL_REVIEW"]:
         terms = {"rate": None, "penalty": None, "fee": None, "amount": None, "payment": None}
         product_info = ""
     else:
-        # Считаем условия на основе скоринга
+        # 2. Рассчитываем ставку, пени, комиссию и платеж на основе скоринга
         terms = calculate_loan_terms(score, app.requested_amount, app.requested_term_months)
 
-        # Подбираем название продукта
+        # 3. Подбираем название продукта на основе цели кредита
         product_type_ru = "Универсальный кредит"
         if app.purpose == "EQUIPMENT":
             product_type_ru = "Целевой кредит на оборудование"
@@ -102,10 +106,11 @@ def make_decision(db: Session, app: models.Application, decision_type: str, reas
             product_type_ru = "Инвестиционный кредит (недвижимость)"
         product_info = f" Рекомендуемый продукт: {product_type_ru}."
 
-        # Если это контроффер, берем урезанную сумму из terms
+        # 4. Если это контроффер, сумма уже урезана внутри terms
         if decision_type == "COUNTER_OFFER":
             amount = terms["amount"]
 
+    # 5. Создаем запись в БД
     decision = models.Decision(
         application_id=app.id,
         decision_type=decision_type,
@@ -117,102 +122,103 @@ def make_decision(db: Session, app: models.Application, decision_type: str, reas
         penalty_rate=terms["penalty"],
         issuance_fee_percent=terms["fee"],
         monthly_payment=terms["payment"],
+        scoring_details=details, # <--- СОХРАНЯЕМ РАСШИФРОВКУ
         decided_by="SYSTEM"
     )
     db.add(decision)
 
+    # 6. Пишем событие в аудит
     audit = models.AuditEvent(
         application_id=app.id,
         actor="SYSTEM",
         action=f"DECISION_{decision_type}",
         old_status=app.status,
         new_status=decision_type,
-        details={"reason_code": reason_code, "reason_text": reason}
+        details={"reason_code": reason_code, "reason_text": reason, "score": score}
     )
     db.add(audit)
+
+    # 7. Сохраняем всё в БД
     db.commit()
-    logger.info(f"Заявка {app.id}: Решение {decision_type} ({reason})")
+    logger.info(f"Заявка {app.id}: Решение {decision_type} (Скоринг: {score}, Грейд: {terms.get('tier', 'N/A')})")
 
 
-def calculate_scoring(egrul, zsk, bki, fns, risk) -> tuple[int, str]:
-    """Точная реализация модели БА (от 0 до 100 баллов)"""
+def calculate_scoring(egrul, zsk, bki, fns, risk) -> tuple[int, str, list]:
     score = 0
+    details = []
+
+    def add_detail(category, points, max_points, reason):
+        nonlocal score
+        score += points
+        details.append({
+            "category": category,
+            "score": points,
+            "max_score": max_points,
+            "reason": reason
+        })
 
     # МГНОВЕННЫЙ ОТКАЗ (СТОП-ФАКТОРЫ)
     founders = egrul.get("founders", [])
     bankrupt_founders = risk.get("bankrupt_founders", [])
     for founder in founders:
         if founder.get("inn") in bankrupt_founders:
-            return 0, "Стоп-фактор: Учредитель находится в стадии банкротства"
+            return 0, "Стоп-фактор: Учредитель находится в стадии банкротства", [{"category": "Стоп-фактор", "score": 0, "max_score": 0, "reason": "Банкротство учредителя"}]
 
     if "__error__" in bki:
-        return 0, "Стоп-фактор: Нет согласия на запрос кредитной истории (БКИ)"
-
+        return 0, "Стоп-фактор: Нет согласия на запрос кредитной истории (БКИ)", []
     if egrul.get("status") != "ACTIVE":
-        return 0, "Стоп-фактор: Компания ликвидирована или в процессе банкротства"
-
+        return 0, "Стоп-фактор: Компания ликвидирована", []
     if fns.get("blocked_accounts"):
-        return 0, "Стоп-фактор: Наличие действующих блокировок расчетных счетов"
-
+        return 0, "Стоп-фактор: Блокировка счетов", []
     if risk.get("verdict") == "HIGH_RISK":
-        return 0, "Стоп-фактор: Банкротство бенефициара или критические судебные риски"
-
+        return 0, "Стоп-фактор: Критические судебные риски", []
     if bki.get("delinquency", {}).get("max_overdue_days", 0) > 90:
-        return 0, "Стоп-фактор: Текущие просрочки более 90 дней"
-
+        return 0, "Стоп-фактор: Просрочки более 90 дней", []
     if egrul.get("has_unreliable_records") or egrul.get("management", [{}])[0].get("disqualified"):
-        return 0, "Стоп-фактор: Недостоверные сведения или дисквалификация директора"
+        return 0, "Стоп-фактор: Недостоверные сведения / Дисквалификация", []
 
-    # 1. СТАБИЛЬНОСТЬ БИЗНЕСА (до 10)
+    # 1. СТАБИЛЬНОСТЬ БИЗНЕСА
     age = egrul.get("age_months", 0)
-    if age > 24:
-        score += 10
-    elif 6 <= age <= 24:
-        score += 5
+    if age > 24: add_detail("Стабильность бизнеса", 10, 10, "Компания старше 24 месяцев")
+    elif 6 <= age <= 24: add_detail("Стабильность бизнеса", 5, 10, "Компания моложе 24 месяцев")
+    else: add_detail("Стабильность бизнеса", 0, 10, "Компания моложе 6 месяцев")
 
-    # 2. ФИНАНСОВОЕ ЗДОРОВЬЕ (до 25)
+    # 2. ФИНАНСОВОЕ ЗДОРОВЬЕ
     fin = fns.get("financials", {}).get("years", [{}])[0]
     profit = fin.get("net_profit", 0)
-    revenue = fin.get("revenue", 1)
     is_growing = fin.get("is_growing", False)
+    if profit > 0 and is_growing: add_detail("Финансовое здоровье", 25, 25, "Прибыль есть, выручка растет")
+    elif profit > 0 and not is_growing: add_detail("Финансовое здоровье", 15, 25, "Прибыль есть, но нет роста")
+    else: add_detail("Финансовое здоровье", 0, 25, "Убыток или нулевая отчетность")
 
-    if profit > 0 and is_growing:
-        score += 25
-    elif profit > 0 and not is_growing:
-        score += 15
-
-    # 3. КРЕДИТНАЯ НАГРУЗКА (до 25)
+    # 3. КРЕДИТНАЯ НАГРУЗКА
+    revenue = fin.get("revenue", 1)
     monthly_revenue = revenue / 12
     monthly_payment = bki.get("total_monthly_payment", 0)
     dti = (monthly_payment / monthly_revenue) if monthly_revenue > 0 else 1.0
+    if dti < 0.20: add_detail("Кредитная нагрузка", 25, 25, "Низкая нагрузка (менее 20% выручки)")
+    elif 0.20 <= dti <= 0.40: add_detail("Кредитная нагрузка", 15, 25, "Средняя нагрузка (20-40% выручки)")
+    else: add_detail("Кредитная нагрузка", 0, 25, "Высокая нагрузка (более 40% выручки)")
 
-    if dti < 0.20:
-        score += 25
-    elif 0.20 <= dti <= 0.40:
-        score += 15
-
-    # 4. НАЛОГОВАЯ ДИСЦИПЛИНА (до 15)
+    # 4. НАЛОГОВАЯ ДИСЦИПЛИНА
     arrears_amount = fns.get("taxes", {}).get("arrears", {}).get("amount", 0)
-    if arrears_amount == 0:
-        score += 15
-    elif arrears_amount < 10000:
-        score += 5
+    if arrears_amount == 0: add_detail("Налоговая дисциплина", 15, 15, "Нет задолженностей")
+    elif arrears_amount < 10000: add_detail("Налоговая дисциплина", 5, 15, "Незначительная задолженность")
+    else: add_detail("Налоговая дисциплина", 0, 15, "Крупная задолженность")
 
-    # 5. СУДЕБНЫЕ РИСКИ (до 10)
+    # 5. СУДЕБНЫЕ РИСКИ
     cases = risk.get("sources", {}).get("arbitration_cases", {}).get("as_defendant", 0)
-    if cases <= 2:
-        score += 10
-    elif 3 <= cases <= 5:
-        score += 5
+    if cases <= 2: add_detail("Судебные риски", 10, 10, "Минимальные судебные риски")
+    elif 3 <= cases <= 5: add_detail("Судебные риски", 5, 10, "Умеренные судебные риски")
+    else: add_detail("Судебные риски", 0, 10, "Высокое количество судов")
 
-    # 6. НАДЕЖНОСТЬ БЕНЕФИЦИАРА (до 15)
+    # 6. НАДЕЖНОСТЬ БЕНЕФИЦИАРА
     director_score = bki.get("director_bki_score", 0)
-    if director_score > 700:
-        score += 15
-    elif 600 <= director_score <= 700:
-        score += 5
+    if director_score > 700: add_detail("Надежность бенефициара", 15, 15, "Отличный личный рейтинг")
+    elif 600 <= director_score <= 700: add_detail("Надежность бенефициара", 5, 15, "Средний личный рейтинг")
+    else: add_detail("Надежность бенефициара", 0, 15, "Низкий рейтинг или микрозаймы")
 
-    return score, ""
+    return score, "", details
 
 
 async def run_pipeline(application_id: int):
@@ -276,32 +282,35 @@ async def run_pipeline(application_id: int):
             save_check(db, app.id, "bki", "FAILED", bki)
 
         update_status(db, app, "SCORING", "Валидация и скоринг")
-        score, reject_reason = calculate_scoring(egrul, zsk, bki, fns, risk)
+
+        # ИСПРАВЛЕНИЕ 1: Добавляем третью переменную details
+        score, reject_reason, details = calculate_scoring(egrul, zsk, bki, fns, risk)
 
         logger.info(f"Заявка {app.id}: Итоговый балл = {score}")
 
         # --- МАТРИЦА РЕШЕНИЙ ---
         if reject_reason:
-            make_decision(db, app, "REJECTED", reject_reason, reason_code="STOP_FACTOR", score=0)
+            # ИСПРАВЛЕНИЕ 2: Передаем details=details
+            make_decision(db, app, "REJECTED", reject_reason, reason_code="STOP_FACTOR", score=0, details=details)
 
         elif score >= 80:
-            # A+ и A классы -> Одобрение (ставки 14% и 17.5%)
             terms = calculate_loan_terms(score, app.requested_amount, app.requested_term_months)
+            # ИСПРАВЛЕНИЕ 3: Передаем details=details
             make_decision(db, app, "APPROVED",
                           f"Скоринг {score}/100. Грейд: {terms['tier']}",
-                          amount=app.requested_amount, reason_code="APPROVED_BY_SCORING", score=score)
+                          amount=app.requested_amount, reason_code="APPROVED_BY_SCORING", score=score, details=details)
 
         elif score >= 60:
-            # B и C классы -> Контроффер (ставки 21% и 23.5%, урезание суммы для C)
             terms = calculate_loan_terms(score, app.requested_amount, app.requested_term_months)
+            # ИСПРАВЛЕНИЕ 4: Передаем details=details
             make_decision(db, app, "COUNTER_OFFER",
                           f"Скоринг {score}/100. Грейд: {terms['tier']}",
-                          reason_code="REDUCED_AMOUNT", score=score)
+                          reason_code="REDUCED_AMOUNT", score=score, details=details)
 
         else:
-            # D класс -> Отказ
+            # ИСПРАВЛЕНИЕ 5: Передаем details=details
             make_decision(db, app, "REJECTED", f"Отказ. Скоринг {score}/100. Высокий риск.", reason_code="LOW_SCORE",
-                          score=0)
+                          score=0, details=details)
 
     except Exception as e:
         logger.error(f"Ошибка в конвейере: {str(e)}")

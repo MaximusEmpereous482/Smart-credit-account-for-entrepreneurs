@@ -529,7 +529,7 @@
   </script>
 
   <!-- ИНТЕГРАЦИЯ С БЭКЕНДОМ -->
-    <script>
+  <script>
     const API_BASE = 'http://localhost:8002/api/client';
 
     // --- 1. ОКНО АВТОРИЗАЦИИ ---
@@ -540,33 +540,25 @@
     var chip = document.getElementById('user-chip');
     var statusBtn = document.getElementById('status-btn');
     var KEY = 'smartcredit_inn';
+    let openAppAfterLogin = false; // Флаг для автоперехода к заявке
 
-    // Функция открытия окна
     window.openLogin = function () {
       if (!loginModal) return;
-
       loginInput.value = '';
       loginInput.classList.remove('invalid');
       loginError.textContent = '';
-
       var passInput = document.getElementById('login-password');
       var passError = document.getElementById('password-error');
-      if (passInput) {
-        passInput.value = '';
-        passInput.classList.remove('invalid');
-      }
+      if (passInput) { passInput.value = ''; passInput.classList.remove('invalid'); }
       if (passError) passError.textContent = '';
-
       loginModal.classList.add('open');
       setTimeout(function () { loginInput.focus(); }, 50);
     };
 
-    // Функция закрытия
     window.closeLogin = function () {
       if (loginModal) loginModal.classList.remove('open');
     };
 
-    // Функция входа
     window.doLogin = function () {
       var v = loginInput.value.replace(/\D/g, '');
       var passInput = document.getElementById('login-password');
@@ -596,6 +588,12 @@
       localStorage.setItem(KEY, v);
       window.closeLogin();
       renderAuth();
+
+      // Если он пытался подать заявку до входа, открываем её
+      if (openAppAfterLogin) {
+        openAppAfterLogin = false;
+        window.openModal();
+      }
     };
 
     window.logout = function () {
@@ -628,6 +626,16 @@
     const originalScoringHTML = stepScoring.innerHTML;
 
     window.openModal = function () {
+      const savedInn = localStorage.getItem(KEY);
+
+      // ПРОВЕРКА: Если не вошел, просим войти
+      if (!savedInn) {
+        openAppAfterLogin = true;
+        alert("Для подачи заявки необходимо войти в личный кабинет по ИНН.");
+        window.openLogin();
+        return;
+      }
+
       if(pollInterval) clearInterval(pollInterval);
       stepScoring.innerHTML = originalScoringHTML;
       stepForm.style.display = 'block';
@@ -637,14 +645,21 @@
       innError.textContent = '';
       innInput.classList.remove('invalid');
       modal.classList.add('open');
-      const savedInn = localStorage.getItem(KEY);
-      if (savedInn) innInput.value = savedInn;
+
+      // Блокируем ИНН
+      innInput.value = savedInn;
+      innInput.readOnly = true;
+      innInput.style.backgroundColor = '#F4F5F7';
+      innInput.style.color = '#62657A';
     };
 
     window.closeModal = function () {
       modal.classList.remove('open');
       if(pollInterval) clearInterval(pollInterval);
       stepScoring.innerHTML = originalScoringHTML;
+      innInput.readOnly = false;
+      innInput.style.backgroundColor = '#FFFFFF';
+      innInput.style.color = '#0B0B0C';
     };
 
     modal.addEventListener('click', function (e) { if (e.target === modal) window.closeModal(); });
@@ -720,12 +735,32 @@
       }
     };
 
-        function showResult(app) {
+    function renderScoringDetails(details) {
+      if (!details || details.length === 0) return '';
+      let html = '<div style="margin-top: 20px; text-align: left; background: #F8F9FA; padding: 15px; border-radius: 8px; border: 1px solid #E2E4EA;">';
+      html += '<h4 style="margin-bottom: 12px; font-size: 15px; color: #0B0B0C;">Из чего сложился ваш балл:</h4>';
+      details.forEach(item => {
+        let percent = item.max_score > 0 ? (item.score / item.max_score) * 100 : 0;
+        let color = percent === 100 ? '#2E7D32' : (percent >= 50 ? '#F27A23' : '#EF3124');
+        html += `
+          <div style="margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+              <span style="color: #62657A;"><strong>${item.category}</strong>: ${item.reason}</span>
+              <span style="color: ${color}; font-weight: bold; margin-left: 10px; white-space: nowrap;">${item.score} / ${item.max_score}</span>
+            </div>
+            <div style="width: 100%; background: #E2E4EA; height: 6px; border-radius: 3px;">
+              <div style="width: ${percent}%; background: ${color}; height: 6px; border-radius: 3px; transition: width 1s;"></div>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function showResult(app) {
       var title = document.getElementById('result-title');
       var text = document.getElementById('result-text');
-
-      // Достаем score из reason_text (или можно передать его отдельно, если добавить в schemas)
-      // Для надежности парсим его из текста "Скоринг XX/100"
       const scoreMatch = app.decision ? app.decision.reason_text.match(/Скоринг (\d+)/) : null;
       const score = scoreMatch ? scoreMatch[1] : "?";
 
@@ -742,6 +777,7 @@
           <strong>Ставка:</strong> ${app.decision.approved_rate}% годовых<br>
           <strong>Ежемесячный платеж:</strong> ${window.fmtMoney(app.decision.monthly_payment)} ₽<br>
           <strong>Пени за просрочку:</strong> ${app.decision.penalty_rate}% в день<br>
+          ${renderScoringDetails(app.decision.scoring_details)}
           <div style="margin-top: 10px; font-size: 13px; color: #62657A;">${app.decision.reason_text}</div>
         `;
       } else if (app.status === 'COUNTER_OFFER') {
@@ -757,12 +793,8 @@
           <strong>Ставка:</strong> ${app.decision.approved_rate}% годовых<br>
           <strong>Ежемесячный платеж:</strong> ${window.fmtMoney(app.decision.monthly_payment)} ₽<br>
           <strong>Комиссия за выдачу:</strong> ${app.decision.issuance_fee_percent}%<br>
-
-          <button class="btn-primary" style="width: 100%; margin-top: 20px; background-color: var(--color-orange);"
-                  onclick="acceptOffer(${app.id}, ${app.decision.approved_amount})">
-            Принять предложение
-          </button>
-
+          <button class="btn-primary" style="width: 100%; margin-top: 20px; background-color: var(--color-orange);" onclick="acceptOffer(${app.id}, ${app.decision.approved_amount})">Принять предложение</button>
+          ${renderScoringDetails(app.decision.scoring_details)}
           <div style="margin-top: 10px; font-size: 13px; color: #62657A;">${app.decision.reason_text}</div>
         `;
       } else if (app.status === 'DOCS_SIGNING') {
@@ -770,9 +802,7 @@
         title.textContent = 'Документы готовятся';
         title.style.color = 'var(--color-success)';
         text.innerHTML = `
-          <div style="margin-bottom: 10px; font-size: 16px; color: var(--color-text-main);">
-            <strong>Статус:</strong> Подписание документов
-          </div>
+          <div style="margin-bottom: 10px; font-size: 16px; color: var(--color-text-main);"><strong>Статус:</strong> Подписание документов</div>
           <p>Вы приняли встречное предложение на сумму <strong>${window.fmtMoney(app.decision.approved_amount)} ₽</strong>.</p>
           <p>Кредитный специалист свяжется с вами для завершения сделки.</p>
         `;
@@ -789,6 +819,7 @@
         text.innerHTML = `
           ${app.decision && app.decision.reason_text.includes('Скоринг') ? `<strong>Ваш балл:</strong> ${score}/100<br><br>` : ''}
           ${app.decision ? app.decision.reason_text : 'К сожалению, заявка отклонена.'}
+          ${app.decision && app.decision.scoring_details ? renderScoringDetails(app.decision.scoring_details) : ''}
         `;
       }
       document.getElementById('result-box').style.display = 'block';
@@ -796,30 +827,21 @@
 
     window.acceptOffer = async function(appId, amount) {
       if (!confirm(`Вы уверены, что хотите принять предложение на сумму ${window.fmtMoney(amount)} ₽?`)) return;
-
       try {
-        const res = await fetch(`${API_BASE}/applications/${appId}/accept-offer`, {
-          method: 'POST'
-        });
-
+        const res = await fetch(`${API_BASE}/applications/${appId}/accept-offer`, { method: 'POST' });
         if (res.ok) {
-          // Меняем экран на статус подписания
           document.getElementById('result-title').textContent = 'Отлично! Заявка принята';
           document.getElementById('result-title').style.color = 'var(--color-success)';
           document.getElementById('result-text').innerHTML = `
             <p>Вы приняли предложение на сумму <strong>${window.fmtMoney(amount)} ₽</strong>.</p>
             <p>Наш менеджер уже готовит кредитные документы. Ожидайте звонка или сообщения в личном кабинете.</p>
-            <div style="margin-top: 15px; padding: 10px; background: #E8F5E9; color: #2E7D32; border-radius: 8px; font-weight: bold;">
-              Статус изменен на: DOCS_SIGNING
-            </div>
+            <div style="margin-top: 15px; padding: 10px; background: #E8F5E9; color: #2E7D32; border-radius: 8px; font-weight: bold;">Статус изменен на: DOCS_SIGNING</div>
           `;
         } else {
           const err = await res.json();
           alert("Ошибка: " + (err.detail || "Не удалось принять предложение"));
         }
-      } catch (e) {
-        alert("Ошибка связи с сервером.");
-      }
+      } catch (e) { alert("Ошибка связи с сервером."); }
     };
 
     window.checkStatus = async function() {
