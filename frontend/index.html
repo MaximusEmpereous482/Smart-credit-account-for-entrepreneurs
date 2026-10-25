@@ -294,6 +294,7 @@
     <nav>
       <a href="#calc">Калькулятор</a>
       <a href="#features">Проверка</a>
+      <a href="#" id="nav-score-btn" style="display: none; color: var(--color-success); font-weight: 700;" onclick="openScorePreview(); return false;">Мой скоринг</a>
     </nav>
     <div>
       <button class="btn-outline" id="status-btn" onclick="checkStatus()" style="display: none; margin-right: 10px; background: var(--color-peach-light); border-color: var(--color-orange); color: var(--color-orange);">Моя заявка</button>
@@ -475,6 +476,19 @@
     </div>
   </div>
 
+  <!-- Окно просмотра скоринга -->
+  <div class="modal-overlay" id="score-modal">
+    <div class="modal-card" style="max-width: 600px;">
+      <button class="modal-close" onclick="closeScoreModal()" aria-label="Закрыть">×</button>
+      <h2 class="modal-title">Ваш кредитный скоринг</h2>
+      <p class="modal-sub">Анализ кредитоспособности на основе данных из внешних источников.</p>
+
+      <div id="score-result-box" style="text-align: center;">
+        <!-- Сюда будет рендериться результат -->
+      </div>
+    </div>
+  </div>
+
   <!-- Скрипт калькулятора (без изменений) -->
   <script>
     (function () {
@@ -599,10 +613,11 @@
     window.logout = function () {
       localStorage.removeItem(KEY);
       localStorage.removeItem('last_app_id');
+      localStorage.removeItem('has_applications');
       renderAuth();
     };
 
-    function renderAuth() {
+        function renderAuth() {
       var inn = localStorage.getItem(KEY);
       if (inn) {
         document.getElementById('user-inn').textContent = inn;
@@ -614,6 +629,7 @@
         chip.classList.remove('show');
         statusBtn.style.display = 'none';
       }
+      updateScoreBtnVisibility();
     }
 
     // --- 2. ОКНО ЗАЯВКИ И ИСТОРИИ ---
@@ -710,6 +726,8 @@
         }
 
         localStorage.setItem('last_app_id', appData.id);
+        localStorage.setItem('has_applications', 'true');
+        updateScoreBtnVisibility();
         await fetch(`${API_BASE}/applications/${appData.id}/submit`, { method: 'POST' });
 
         let stepCounter = 0;
@@ -825,23 +843,34 @@
       document.getElementById('result-box').style.display = 'block';
     }
 
-    window.acceptOffer = async function(appId, amount) {
+        window.acceptOffer = async function(appId, amount, isFromList = false) {
       if (!confirm(`Вы уверены, что хотите принять предложение на сумму ${window.fmtMoney(amount)} ₽?`)) return;
+
       try {
         const res = await fetch(`${API_BASE}/applications/${appId}/accept-offer`, { method: 'POST' });
+
         if (res.ok) {
-          document.getElementById('result-title').textContent = 'Отлично! Заявка принята';
-          document.getElementById('result-title').style.color = 'var(--color-success)';
-          document.getElementById('result-text').innerHTML = `
-            <p>Вы приняли предложение на сумму <strong>${window.fmtMoney(amount)} ₽</strong>.</p>
-            <p>Наш менеджер уже готовит кредитные документы. Ожидайте звонка или сообщения в личном кабинете.</p>
-            <div style="margin-top: 15px; padding: 10px; background: #E8F5E9; color: #2E7D32; border-radius: 8px; font-weight: bold;">Статус изменен на: DOCS_SIGNING</div>
-          `;
+          if (isFromList) {
+            // Если нажали из списка "Мои заявки"
+            alert("Вы успешно приняли встречное предложение!");
+            window.checkStatus(); // Перезагружаем список, чтобы увидеть новый статус DOCS_SIGNING
+          } else {
+            // Если нажали из основного окна сразу после подачи
+            document.getElementById('result-title').textContent = 'Отлично! Заявка принята';
+            document.getElementById('result-title').style.color = 'var(--color-success)';
+            document.getElementById('result-text').innerHTML = `
+              <p>Вы приняли предложение на сумму <strong>${window.fmtMoney(amount)} ₽</strong>.</p>
+              <p>Наш менеджер уже готовит кредитные документы. Ожидайте звонка или сообщения в личном кабинете.</p>
+              <div style="margin-top: 15px; padding: 10px; background: #E8F5E9; color: #2E7D32; border-radius: 8px; font-weight: bold;">Статус изменен на: DOCS_SIGNING</div>
+            `;
+          }
         } else {
           const err = await res.json();
           alert("Ошибка: " + (err.detail || "Не удалось принять предложение"));
         }
-      } catch (e) { alert("Ошибка связи с сервером."); }
+      } catch (e) {
+        alert("Ошибка связи с сервером.");
+      }
     };
 
     window.checkStatus = async function() {
@@ -850,19 +879,33 @@
       modal.classList.add('open');
       stepForm.style.display = 'none';
       stepScoring.style.display = 'block';
+
       stepScoring.innerHTML = `
         <h2 class="modal-title">Мои заявки</h2>
         <p class="modal-sub">Все ваши заявки по ИНН ${inn}</p>
         <div id="my-apps-list" style="margin-bottom: 20px; max-height: 400px; overflow-y: auto;"></div>
         <button class="btn-primary" style="width: 100%;" onclick="closeModal()">Закрыть</button>
       `;
+
       try {
         const res = await fetch(`${API_BASE}/my-applications?inn=${inn}`);
         const apps = await res.json();
         const list = document.getElementById('my-apps-list');
-        if (apps.length === 0) { list.innerHTML = '<p style="color: #62657A;">У вас пока нет заявок.</p>'; return; }
+
+        if (apps.length === 0) {
+          list.innerHTML = '<p style="color: #62657A;">У вас пока нет заявок.</p>';
+          return;
+        }
+
         apps.forEach(app => {
-          let color = app.status === 'APPROVED' ? '#E8F5E9' : app.status === 'REJECTED' ? '#FDECEA' : app.status === 'COUNTER_OFFER' ? '#FFF0E5' : '#E2E4EA';
+          let color = app.status === 'APPROVED' ? '#E8F5E9' : app.status === 'REJECTED' ? '#FDECEA' : app.status === 'COUNTER_OFFER' ? '#FFF0E5' : app.status === 'DOCS_SIGNING' ? '#E3F2FD' : '#E2E4EA';
+
+          // Если статус COUNTER_OFFER, добавляем кнопку принятия
+          let actionBtn = '';
+          if (app.status === 'COUNTER_OFFER') {
+             actionBtn = `<button class="btn-primary" style="margin-top: 10px; padding: 8px 12px; font-size: 14px; background-color: var(--color-orange); width: 100%;" onclick="acceptOffer(${app.id}, ${app.decision.approved_amount}, true)">Принять предложение</button>`;
+          }
+
           list.innerHTML += `
             <div style="padding: 12px; background: ${color}; border-radius: 8px; margin-bottom: 8px; border: 1px solid #D0D3DC;">
               <div style="display: flex; justify-content: space-between; font-weight: 600;">
@@ -871,10 +914,93 @@
               </div>
               <div style="font-size: 12px; color: #62657A; margin-top: 4px;">${new Date(app.created_at).toLocaleString('ru-RU')}</div>
               ${app.decision ? `<div style="font-size: 12px; margin-top: 4px;">${app.decision.reason_text}</div>` : ''}
+              ${actionBtn}
             </div>`;
         });
       } catch(e) { alert("Ошибка связи с сервером."); window.closeModal(); }
     };
+
+    // --- ПРОСМОТР СКОРИНГА ---
+    async function updateScoreBtnVisibility() {
+      const inn = localStorage.getItem(KEY);
+      const scoreBtn = document.getElementById('nav-score-btn');
+      if (!scoreBtn) return;
+
+      // Если не вошел — скрываем
+      if (!inn) {
+        scoreBtn.style.display = 'none';
+        return;
+      }
+
+      // Сначала показываем, если в локальной памяти есть флаг (для мгновенной реакции)
+      if (localStorage.getItem('has_applications') === 'true') {
+        scoreBtn.style.display = 'block';
+      }
+
+      // Затем делаем запрос в базу данных, чтобы точно узнать статус
+      try {
+        const res = await fetch(`${API_BASE}/my-applications?inn=${inn}`);
+        if (res.ok) {
+          const apps = await res.json();
+          // Проверяем, есть ли хотя бы одна заявка, которая НЕ в статусе DRAFT (то есть была отправлена)
+          const hasSubmitted = apps.some(app => app.status !== 'DRAFT');
+
+          if (hasSubmitted) {
+            scoreBtn.style.display = 'block';
+            localStorage.setItem('has_applications', 'true'); // Синхронизируем
+          } else {
+            scoreBtn.style.display = 'none';
+            localStorage.removeItem('has_applications');
+          }
+        }
+      } catch (e) {
+        console.error("Ошибка проверки заявок", e);
+      }
+    }
+
+    window.openScorePreview = async function() {
+      const inn = localStorage.getItem(KEY);
+      if (!inn) {
+        alert("Сначала войдите по ИНН");
+        return;
+      }
+
+      const scoreModal = document.getElementById('score-modal');
+      const resultBox = document.getElementById('score-result-box');
+
+      scoreModal.classList.add('open');
+      resultBox.innerHTML = '<p style="color: #62657A;">Загрузка данных из ЕГРЮЛ, ФНС, БКИ...</p>';
+
+      try {
+        const res = await fetch(`${API_BASE}/preview-score/${inn}`);
+        const data = await res.json();
+
+        if (data.reject_reason) {
+          resultBox.innerHTML = `
+            <div style="padding: 15px; background: #FDECEA; border-radius: 8px; border: 1px solid #EF3124; margin-bottom: 20px; text-align: left;">
+              <h3 style="color: #EF3124; margin-bottom: 8px;">Стоп-фактор</h3>
+              <p style="font-size: 14px; color: #0B0B0C;">${data.reject_reason}</p>
+            </div>
+          `;
+        } else {
+          let color = data.score >= 80 ? '#2E7D32' : (data.score >= 60 ? '#F27A23' : '#EF3124');
+          resultBox.innerHTML = `
+            <div style="margin-bottom: 20px;">
+              <div style="font-size: 16px; margin-bottom: 5px;">Текущий балл:</div>
+              <div style="font-size: 36px; font-weight: bold; color: ${color};">${data.score} / 100</div>
+            </div>
+            ${renderScoringDetails(data.details)}
+          `;
+        }
+      } catch (e) {
+        resultBox.innerHTML = '<p style="color: #EF3124;">Ошибка получения данных. Попробуйте позже.</p>';
+      }
+    };
+
+    window.closeScoreModal = function() {
+      document.getElementById('score-modal').classList.remove('open');
+    };
+
 
     loginInput.addEventListener('input', function () { loginInput.value = loginInput.value.replace(/\D/g, ''); });
     loginInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') document.getElementById('login-password').focus(); });

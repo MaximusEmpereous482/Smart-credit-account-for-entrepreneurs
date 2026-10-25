@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Кабинет сотрудника банка</title>
   <style>
-    /* Используем базовые стили из index.html */
     body { font-family: -apple-system, 'Segoe UI', sans-serif; background: #F4F5F7; margin: 0; padding: 20px; color: #0B0B0C; }
     .container { max-width: 1200px; margin: 0 auto; }
     h1 { font-size: 28px; margin-bottom: 20px; }
@@ -17,20 +16,37 @@
     .b-COUNTER_OFFER { background: #FFF0E5; color: #F27A23; }
     .b-MANUAL_REVIEW { background: #FFF3E0; color: #E65100; }
     .b-DRAFT { background: #E2E4EA; color: #62657A; }
-    .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+    .b-DOCS_SIGNING { background: #E3F2FD; color: #1565C0; }
+
+    .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 14px;}
     .btn-view { background: #EF3124; color: #FFF; }
+    .btn-approve { background: #2E7D32; color: white; }
+    .btn-reject { background: #EF3124; color: white; }
+    .btn-request { background: #F27A23; color: white; }
+    .btn-close { background: #E2E4EA; color: #0B0B0C; float: right; }
 
     /* Модалка */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100; }
     .modal.open { display: flex; }
     .modal-content { background: #FFF; padding: 30px; border-radius: 16px; width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; }
+
+    /* Блок проверок */
     .check-item { padding: 12px; background: #F4F5F7; border-radius: 8px; margin-bottom: 8px; }
     .check-fail { border-left: 4px solid #EF3124; }
     .check-success { border-left: 4px solid #2E7D32; }
-    pre { background: #282c34; color: #abb2bf; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 12px; }
-    .actions { margin-top: 20px; display: flex; gap: 10px; }
-    .btn-approve { background: #2E7D32; color: white; }
-    .btn-reject { background: #EF3124; color: white; }
+    pre { background: #282c34; color: #abb2bf; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 12px; margin-top: 10px;}
+
+    /* Блок скоринга */
+    .scoring-box { background: #F8F9FA; border: 1px solid #E2E4EA; border-radius: 12px; padding: 20px; margin-top: 20px; }
+    .scoring-item { margin-bottom: 15px; }
+    .scoring-item-header { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 4px; }
+    .scoring-item-reason { font-size: 12px; color: #62657A; margin-bottom: 4px; }
+    .progress-bar-bg { width: 100%; background: #E2E4EA; height: 8px; border-radius: 4px; }
+    .progress-bar-fill { height: 8px; border-radius: 4px; }
+    .alert-warning { padding: 15px; background: #FFF3E0; color: #E65100; border-radius: 8px; font-size: 14px; border-left: 4px solid #F27A23;}
+
+    .actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; border-top: 1px solid #E2E4EA; padding-top: 20px;}
+    .actions input { flex: 1; min-width: 200px; padding: 10px; border: 1px solid #D0D3DC; border-radius: 8px; outline: none;}
   </style>
 </head>
 <body>
@@ -58,10 +74,10 @@
   <!-- Модалка с деталями -->
   <div class="modal" id="detail-modal">
     <div class="modal-content">
-      <button class="btn" onclick="closeModal()" style="float: right; background: #E2E4EA;">×</button>
+      <button class="btn btn-close" onclick="closeModal()">×</button>
       <h2 id="m-title">Детали заявки</h2>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; margin-top: 20px;">
         <div>
           <p><strong>Компания:</strong> <span id="m-company"></span></p>
           <p><strong>ИНН:</strong> <span id="m-inn"></span></p>
@@ -74,14 +90,18 @@
         </div>
       </div>
 
-      <h3>Результаты проверок</h3>
+      <!-- Блок скоринга -->
+      <div id="m-scoring-container"></div>
+
+      <h3 style="margin-top: 20px;">Результаты технических проверок</h3>
       <div id="m-checks"></div>
 
       <!-- Блок для ручного решения -->
       <div id="manual-actions" class="actions" style="display: none;">
-        <h3 style="width: 100%;">Принять ручное решение</h3>
-        <input type="text" id="manual-reason" placeholder="Комментарий к решению" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 8px;">
+        <h3 style="width: 100%; margin-bottom: 10px;">Принять ручное решение</h3>
+        <input type="text" id="manual-reason" placeholder="Комментарий к решению">
         <button class="btn btn-approve" onclick="manualDecide('APPROVED')">Одобрить</button>
+        <button class="btn btn-request" onclick="requestInfo()">Запросить данные</button>
         <button class="btn btn-reject" onclick="manualDecide('REJECTED')">Отклонить</button>
       </div>
     </div>
@@ -132,7 +152,62 @@
         document.getElementById('m-approved').textContent = '—';
       }
 
-      // Рендер проверок
+      // --- РЕНДЕР СКОРИНГА ---
+      const scoringContainer = document.getElementById('m-scoring-container');
+      scoringContainer.innerHTML = '';
+
+      if (app.decision && app.decision.scoring_details && app.decision.scoring_details.length > 0) {
+        // 1. Если скоринг есть - рисуем полоски
+        let html = '<div class="scoring-box"><h3>Детализация скоринга</h3>';
+        app.decision.scoring_details.forEach(item => {
+          let percent = item.max_score > 0 ? (item.score / item.max_score) * 100 : 0;
+          let color = percent === 100 ? '#2E7D32' : (percent >= 50 ? '#F27A23' : '#EF3124');
+          html += `
+            <div class="scoring-item">
+              <div class="scoring-item-header">
+                <strong>${item.category}</strong>
+                <span style="color: ${color}">${item.score} / ${item.max_score}</span>
+              </div>
+              <div class="scoring-item-reason">${item.reason}</div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: ${percent}%; background: ${color};"></div>
+              </div>
+            </div>
+          `;
+        });
+        html += '</div>';
+        scoringContainer.innerHTML = html;
+
+      } else if (app.status === 'APPROVED' || app.status === 'COUNTER_OFFER' || app.status === 'DOCS_SIGNING') {
+        // 2. Если одобрено ВРУЧНУЮ (нет скоринга), рисуем красивую заглушку для банкира
+        scoringContainer.innerHTML = `
+          <div class="scoring-box" style="border-color: #2E7D32; background: #E8F5E9;">
+            <h3 style="color: #2E7D32;">Ручное решение сотрудника банка</h3>
+            <p style="font-size: 14px; color: #62657A; margin-bottom: 15px;">
+              Автоматический скоринг не был завершен (техническая ошибка). Заявка одобрена сотрудником банка на основании дополнительных данных.
+            </p>
+            <div class="scoring-item">
+              <div class="scoring-item-header">
+                <strong>Решение принято</strong>
+                <span style="color: #2E7D32;">100%</span>
+              </div>
+              <div class="scoring-item-reason">Кредит выдан в обход автоматического скоринга</div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: 100%; background: #2E7D32;"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        // 3. Если отказ (стоп-фактор) или ручная проверка без данных
+        let message = "Недостаточно данных для расчета скоринга.";
+        if (app.status === 'MANUAL_REVIEW') message = "Скоринг не был завершен из-за технической ошибки (требуется ручная проверка).";
+        if (app.status === 'REJECTED') message = "Скоринг не рассчитывался. Сработал стоп-фактор на ранних этапах.";
+
+        scoringContainer.innerHTML = `<div class="alert-warning"><strong>Внимание!</strong> ${message}</div>`;
+      }
+
+      // --- РЕНДЕР ПРОВЕРОК ---
       const checksDiv = document.getElementById('m-checks');
       checksDiv.innerHTML = '';
       app.checks.forEach(check => {
@@ -148,8 +223,10 @@
       });
 
       // Показываем кнопки ручного решения только если статус MANUAL_REVIEW
-      document.getElementById('manual-actions').style.display =
-        (app.status === 'MANUAL_REVIEW') ? 'flex' : 'none';
+      document.getElementById('manual-actions').style.display = (app.status === 'MANUAL_REVIEW') ? 'flex' : 'none';
+
+      // Очищаем поле ввода
+      document.getElementById('manual-reason').value = '';
 
       document.getElementById('detail-modal').classList.add('open');
     }
@@ -173,11 +250,16 @@
       }
     }
 
+    function requestInfo() {
+      const reason = document.getElementById('manual-reason').value || 'Требуются дополнительные документы';
+      alert(`Запрос отправлен клиенту!\nКомментарий: ${reason}\n\n(В реальной системе здесь бы статус менялся на REQUEST_INFO и клиенту уходило уведомление)`);
+      closeModal();
+    }
+
     function closeModal() {
       document.getElementById('detail-modal').classList.remove('open');
     }
 
-    // Загружаем при старте
     loadApplications();
   </script>
 </body>

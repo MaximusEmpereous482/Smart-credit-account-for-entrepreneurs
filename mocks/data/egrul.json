@@ -1,92 +1,42 @@
 {
   "7707083893": {
-    "inn": "7707083893",
-    "ogrn": "1027700132195",
-    "entity_type": "LEGAL_ENTITY",
-    "short_name": "ООО «Ромашка»",
-    "status": "ACTIVE",
-    "registration_date": "2002-08-08",
-    "age_months": 288,
-    "okved_main": { "code": "46.90", "name": "Торговля оптовая неспециализированная" },
-    "management": [
-      { "role": "GENERAL_DIRECTOR", "full_name": "Иванов Иван Иванович", "inn": "770000000001", "since": "2007-01-01", "disqualified": false }
-    ],
-    "founders": [
-      { "full_name": "Иванов Иван Иванович", "inn": "770000000001", "share_percent": 100 }
-    ],
-    "has_unreliable_records": false,
-    "bankruptcy_case": null
+    "inn": "7707083893", "ogrn": "1027700132195", "entity_type": "LEGAL_ENTITY", "short_name": "ООО «Ромашка»", "status": "ACTIVE", "registration_date": "2002-08-08", "age_months": 288, "okved_main": { "code": "46.90", "name": "Торговля оптовая неспециализированная" },
+    "management": [{ "role": "GENERAL_DIRECTOR", "full_name": "Иванов Иван Иванович", "inn": "770000000001", "since": "2007-01-01", "disqualified": false }],
+    "founders": [{ "full_name": "Иванов Иван Иванович", "inn": "770000000001", "share_percent": 100 }], "has_unreliable_records": false, "bankruptcy_case": null
   },
   "7736207543": {
-    "inn": "7736207543",
-    "ogrn": "1027700000000",
-    "entity_type": "LEGAL_ENTITY",
-    "short_name": "ООО «Вектор»",
-    "status": "ACTIVE",
-    "registration_date": "2010-11-20",
-    "age_months": 180,
-    "okved_main": { "code": "62.01", "name": "Разработка компьютерного ПО" },
-    "management": [
-      { "role": "GENERAL_DIRECTOR", "full_name": "Петров Петр Петрович", "inn": "770000000002", "since": "2010-01-01", "disqualified": false }
-    ],
-    "founders": [
-      { "full_name": "Петров Петр Петрович", "inn": "770000000002", "share_percent": 100 }
-    ],
-    "has_unreliable_records": false,
-    "bankruptcy_case": null
+    "inn": "7736207543", "ogrn": "1027700000000", "entity_type": "LEGAL_ENTITY", "short_name": "ООО «Вектор»", "status": "ACTIVE", "registration_date": "2010-11-20", "age_months": 180, "okved_main": { "code": "62.01", "name": "Разработка компьютерного ПО" },
+    "management": [{ "role": "GENERAL_DIRECTOR", "full_name": "Петров Петр Петрович", "inn": "770000000002", "since": "2010-01-01", "disqualified": false }],
+    "founders": [{ "full_name": "Петров Петр Петрович", "inn": "770000000002", "share_percent": 100 }], "has_unreliable_records": false, "bankruptcy_case": null
   },
   "7740000076": {
-    "inn": "7740000076",
-    "ogrn": "1027700000001",
-    "entity_type": "LEGAL_ENTITY",
-    "short_name": "ООО «ТехноСтарт»",
-    "status": "ACTIVE",
-    "registration_date": "2023-12-20",
-    "age_months": 24,
-    "okved_main": { "code": "62.01", "name": "Разработка компьютерного ПО" },
-    "management": [
-      { "role": "GENERAL_DIRECTOR", "full_name": "Сидоров Сидор Сидорович", "inn": "770000000003", "since": "2023-01-01", "disqualified": false }
-    ],
-    "founders": [
-      { "full_name": "Сидоров Сидор Сидорович", "inn": "770000000003", "share_percent": 100 }
-    ],
-    "has_unreliable_records": false,
-    "bankruptcy_case": null
+    "inn": "7740000076", "ogrn": "1027700000001", "entity_type": "LEGAL_ENTITY", "short_name": "ООО «ТехноСтарт»", "status": "ACTIVE", "registration_date": "2023-12-20", "age_months": 24, "okved_main": { "code": "62.01", "name": "Разработка компьютерного ПО" },
+    "management": [{ "role": "GENERAL_DIRECTOR", "full_name": "Сидоров Сидор Сидорович", "inn": "770000000003", "since": "2023-01-01", "disqualified": false }],
+    "founders": [{ "full_name": "Сидоров Сидор Сидорович", "inn": "770000000003", "share_percent": 100 }], "has_unreliable_records": false, "bankruptcy_case": null
   },
   "7736050003": {
-    "inn": "7736050003",
-    "ogrn": "1027700000002",
-    "entity_type": "LEGAL_ENTITY",
-    "short_name": "ООО «СтройГрад»",
-    "status": "ACTIVE",
-    "registration_date": "2015-01-15",
-    "age_months": 120,
-    "okved_main": { "code": "41.20", "name": "Строительство жилых и нежилых зданий" },
-    "management": [
-      { "role": "GENERAL_DIRECTOR", "full_name": "Козлов Дмитрий Олегович", "inn": "770000000004", "since": "2015-01-01", "disqualified": false }
-    ],
-    "founders": [
-      { "full_name": "Козлов Дмитрий Олегович", "inn": "770000000004", "share_percent": 100 }
-    ],
-    "has_unreliable_records": false,
-    "bankruptcy_case": null
+    "inn": "7736050003", "ogrn": "1027700000002", "entity_type": "LEGAL_ENTITY", "short_name": "ООО «СтройГрад»", "status": "ACTIVE", "registration_date": "2015-01-15", "age_months": 120, "okved_main": { "code": "41.20", "name": "Строительство жилых и нежилых зданий" },
+    "management": [{ "role": "GENERAL_DIRECTOR", "full_name": "Козлов Дмитрий Олегович", "inn": "770000000004", "since": "2015-01-01", "disqualified": false }],
+    "founders": [{ "full_name": "Козлов Дмитрий Олегович", "inn": "770000000004", "share_percent": 100 }], "has_unreliable_records": false, "bankruptcy_case": null
   },
   "500100732259": {
-    "inn": "500100732259",
-    "ogrn": "315504700000000",
-    "entity_type": "INDIVIDUAL_ENTREPRENEUR",
-    "short_name": "ИП Иванов И.И.",
-    "status": "ACTIVE",
-    "registration_date": "2022-06-01",
-    "age_months": 48,
-    "okved_main": { "code": "49.41", "name": "Деятельность автомобильного грузового транспорта" },
-    "management": [
-      { "role": "ENTREPRENEUR", "full_name": "Иванов Иван Иванович", "inn": "500100732259", "since": "2022-06-01", "disqualified": false }
-    ],
-    "founders": [
-      { "full_name": "Иванов Иван Иванович", "inn": "500100732259", "share_percent": 100 }
-    ],
-    "has_unreliable_records": true,
-    "bankruptcy_case": null
+    "inn": "500100732259", "ogrn": "315504700000000", "entity_type": "INDIVIDUAL_ENTREPRENEUR", "short_name": "ИП Иванов И.И.", "status": "ACTIVE", "registration_date": "2022-06-01", "age_months": 48, "okved_main": { "code": "49.41", "name": "Деятельность автомобильного грузового транспорта" },
+    "management": [{ "role": "ENTREPRENEUR", "full_name": "Иванов Иван Иванович", "inn": "500100732259", "since": "2022-06-01", "disqualified": false }],
+    "founders": [{ "full_name": "Иванов Иван Иванович", "inn": "500100732259", "share_percent": 100 }], "has_unreliable_records": true, "bankruptcy_case": null
+  },
+  "7701234560": {
+    "inn": "7701234560", "ogrn": "1157746000010", "entity_type": "LEGAL_ENTITY", "short_name": "ООО «Перспектива»", "status": "ACTIVE", "registration_date": "2025-10-01", "age_months": 12, "okved_main": { "code": "46.90", "name": "Торговля оптовая" },
+    "management": [{ "role": "GENERAL_DIRECTOR", "full_name": "Смирнов Олег", "inn": "770000000010", "since": "2025-10-01", "disqualified": false }],
+    "founders": [{ "full_name": "Смирнов Олег", "inn": "770000000010", "share_percent": 100 }], "has_unreliable_records": false, "bankruptcy_case": null
+  },
+  "7734567808": {
+    "inn": "7734567808", "ogrn": "1157746000011", "entity_type": "LEGAL_ENTITY", "short_name": "ООО «ТоргСервис»", "status": "ACTIVE", "registration_date": "2016-02-15", "age_months": 100, "okved_main": { "code": "47.11", "name": "Торговля розничная" },
+    "management": [{ "role": "GENERAL_DIRECTOR", "full_name": "Васильев Петр", "inn": "770000000011", "since": "2016-02-15", "disqualified": false }],
+    "founders": [{ "full_name": "Васильев Петр", "inn": "770000000011", "share_percent": 100 }], "has_unreliable_records": false, "bankruptcy_case": null
+  },
+  "7812345675": {
+    "inn": "7812345675", "ogrn": "1157746000012", "entity_type": "LEGAL_ENTITY", "short_name": "ООО «Ликвидатор»", "status": "IN_LIQUIDATION", "registration_date": "2010-01-01", "age_months": 200, "okved_main": { "code": "41.20", "name": "Строительство" },
+    "management": [{ "role": "GENERAL_DIRECTOR", "full_name": "Иванов Иван", "inn": "770000000012", "since": "2010-01-01", "disqualified": false }],
+    "founders": [{ "full_name": "Иванов Иван", "inn": "770000000012", "share_percent": 100 }], "has_unreliable_records": false, "bankruptcy_case": null
   }
 }

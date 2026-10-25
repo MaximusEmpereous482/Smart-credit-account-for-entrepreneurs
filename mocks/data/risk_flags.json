@@ -1,32 +1,10 @@
 {
-  "7707083893": {
-    "inn": "7707083893",
-    "sources": { "arbitration_cases": { "as_defendant": 0 } },
-    "verdict": "CLEAN",
-    "bankrupt_founders": []
-  },
-  "7736207543": {
-    "inn": "7736207543",
-    "sources": { "arbitration_cases": { "as_defendant": 0 } },
-    "verdict": "CLEAN",
-    "bankrupt_founders": []
-  },
-  "7740000076": {
-    "inn": "7740000076",
-    "sources": { "arbitration_cases": { "as_defendant": 3 } },
-    "verdict": "REVIEW_REQUIRED",
-    "bankrupt_founders": []
-  },
-  "7736050003": {
-    "inn": "7736050003",
-    "sources": { "arbitration_cases": { "as_defendant": 5 } },
-    "verdict": "HIGH_RISK",
-    "bankrupt_founders": []
-  },
-  "500100732259": {
-    "inn": "500100732259",
-    "sources": { "arbitration_cases": { "as_defendant": 0 } },
-    "verdict": "CLEAN",
-    "bankrupt_founders": ["500100732259"]
-  }
+  "7707083893": { "inn": "7707083893", "sources": { "arbitration_cases": { "as_defendant": 0 } }, "verdict": "CLEAN", "bankrupt_founders": [] },
+  "7736207543": { "inn": "7736207543", "sources": { "arbitration_cases": { "as_defendant": 0 } }, "verdict": "CLEAN", "bankrupt_founders": [] },
+  "7740000076": { "inn": "7740000076", "sources": { "arbitration_cases": { "as_defendant": 3 } }, "verdict": "REVIEW_REQUIRED", "bankrupt_founders": [] },
+  "7736050003": { "inn": "7736050003", "sources": { "arbitration_cases": { "as_defendant": 5 } }, "verdict": "HIGH_RISK", "bankrupt_founders": [] },
+  "500100732259": { "inn": "500100732259", "sources": { "arbitration_cases": { "as_defendant": 0 } }, "verdict": "CLEAN", "bankrupt_founders": ["500100732259"] },
+  "7701234560": { "inn": "7701234560", "sources": { "arbitration_cases": { "as_defendant": 1 } }, "verdict": "CLEAN", "bankrupt_founders": [] },
+  "7734567808": { "inn": "7734567808", "sources": { "arbitration_cases": { "as_defendant": 3 } }, "verdict": "REVIEW_REQUIRED", "bankrupt_founders": [] },
+  "7812345675": { "inn": "7812345675", "sources": { "arbitration_cases": { "as_defendant": 0 } }, "verdict": "CLEAN", "bankrupt_founders": [] }
 }

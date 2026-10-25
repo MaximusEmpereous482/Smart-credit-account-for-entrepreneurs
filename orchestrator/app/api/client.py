@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app import models, schemas
-from app.core.pipeline import run_pipeline  # <-- Импортируем наш мозг
+from app.core import mocks_client
+from app.core.pipeline import run_pipeline, calculate_scoring  # <-- Импортируем наш мозг
 
 router = APIRouter()
 
@@ -112,3 +113,29 @@ def accept_offer(application_id: int, db: Session = Depends(get_db)):
     db.refresh(app)
 
     return {"message": "Вы приняли встречное предложение", "status": app.status}
+
+
+@router.get("/preview-score/{inn}", tags=["Client"])
+async def preview_score(inn: str):
+    """Предварительный скоринг без создания заявки"""
+    egrul = await mocks_client.get_egrul(inn)
+    zsk = await mocks_client.get_zsk(inn)
+    fns = await mocks_client.get_fns(inn)
+    risk = await mocks_client.get_risk_flags(inn)
+    bki = await mocks_client.get_bki(inn)
+
+    # Если моки вообще не ответили (упали), возвращаем ошибку
+    if "__error__" in egrul or "__error__" in fns or "__error__" in bki:
+        return {"score": 0, "reject_reason": "Техническая ошибка при запросе к внешним сервисам", "details": []}
+
+    from app.core.pipeline import calculate_scoring
+    try:
+        score, reject_reason, details = calculate_scoring(egrul, zsk, bki, fns, risk)
+        return {
+            "score": score,
+            "reject_reason": reject_reason,
+            "details": details
+        }
+    except Exception as e:
+        # Если сам скоринг упал
+        return {"score": 0, "reject_reason": f"Ошибка расчета: {str(e)}", "details": []}
