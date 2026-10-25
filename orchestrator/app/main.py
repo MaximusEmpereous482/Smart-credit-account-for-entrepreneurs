@@ -13,7 +13,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Для хакатона разрешаем всем
+    allow_origins=["*"],  # Для хакатона разрешаем всем
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -21,7 +21,8 @@ app.add_middleware(
 
 # <--- ОБЯЗАТЕЛЬНО ДОЛЖНО БЫТЬ
 app.include_router(client.router, prefix="/api/client")
-app.include_router(bank.router, prefix="/api/bank") # <--- Подключаем банк
+app.include_router(bank.router, prefix="/api/bank")  # <--- Подключаем банк
+
 
 @app.get("/health", tags=["System"])
 def health_check():
