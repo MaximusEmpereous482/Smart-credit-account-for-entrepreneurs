@@ -77,3 +77,38 @@ def get_application(application_id: int, db: Session = Depends(get_db)):
     if not app:
         raise HTTPException(status_code=404, detail="Заявка не найдена")
     return app
+
+
+@router.post("/applications/{application_id}/accept-offer", tags=["Client"])
+def accept_offer(application_id: int, db: Session = Depends(get_db)):
+    """Клиент принимает встречное предложение (Counter-Offer)"""
+    app = db.query(models.Application).filter(models.Application.id == application_id).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Заявка не найдена")
+
+    if app.status != "COUNTER_OFFER":
+        raise HTTPException(status_code=400, detail="По этой заявке нет активного предложения")
+
+    # Меняем статус на "Подписание документов"
+    old_status = app.status
+    app.status = "DOCS_SIGNING"
+    app.current_step_name = "Подготовка документов"
+
+    # Фиксируем согласие клиента в решении
+    if app.decision:
+        app.decision.reason_text += " (Клиент принял условия)"
+        app.decision.decided_by = "CLIENT"
+
+    # Добавляем событие в аудит
+    audit = models.AuditEvent(
+        application_id=app.id,
+        actor="CLIENT",
+        action="ACCEPTED_OFFER",
+        old_status=old_status,
+        new_status=app.status
+    )
+    db.add(audit)
+    db.commit()
+    db.refresh(app)
+
+    return {"message": "Вы приняли встречное предложение", "status": app.status}

@@ -720,19 +720,26 @@
       }
     };
 
-    function showResult(app) {
+        function showResult(app) {
       var title = document.getElementById('result-title');
       var text = document.getElementById('result-text');
+
+      // Достаем score из reason_text (или можно передать его отдельно, если добавить в schemas)
+      // Для надежности парсим его из текста "Скоринг XX/100"
+      const scoreMatch = app.decision ? app.decision.reason_text.match(/Скоринг (\d+)/) : null;
+      const score = scoreMatch ? scoreMatch[1] : "?";
 
       if (app.status === 'APPROVED') {
         setBadge(0, 'success'); setBadge(1, 'success'); setBadge(2, 'success');
         title.textContent = 'Кредит одобрен!';
         title.style.color = 'var(--color-success)';
-        // ИСПОЛЬЗУЕМ innerHTML, чтобы добавить переносы строк и жирный шрифт
         text.innerHTML = `
+          <div style="margin-bottom: 10px; font-size: 16px; color: var(--color-text-main);">
+            <strong>Ваш скоринговый балл:</strong> <span style="color: var(--color-success); font-weight: bold;">${score}/100</span>
+          </div>
           <strong>Компания:</strong> ${app.company.company_name}<br><br>
           <strong>Сумма:</strong> ${window.fmtMoney(app.decision.approved_amount)} ₽<br>
-          <strong>Ставка:</strong> ${app.decision.approved_rate}% годовых (Премиум-условия)<br>
+          <strong>Ставка:</strong> ${app.decision.approved_rate}% годовых<br>
           <strong>Ежемесячный платеж:</strong> ${window.fmtMoney(app.decision.monthly_payment)} ₽<br>
           <strong>Пени за просрочку:</strong> ${app.decision.penalty_rate}% в день<br>
           <div style="margin-top: 10px; font-size: 13px; color: #62657A;">${app.decision.reason_text}</div>
@@ -742,12 +749,32 @@
         title.textContent = 'Встречное предложение';
         title.style.color = 'var(--color-orange)';
         text.innerHTML = `
+          <div style="margin-bottom: 10px; font-size: 16px; color: var(--color-text-main);">
+            <strong>Ваш скоринговый балл:</strong> <span style="color: var(--color-orange); font-weight: bold;">${score}/100</span>
+          </div>
           <strong>Компания:</strong> ${app.company.company_name}<br><br>
-          <strong>Одобренная сумма:</strong> ${window.fmtMoney(app.decision.approved_amount)} ₽ (70% от запрошенной)<br>
-          <strong>Ставка:</strong> ${app.decision.approved_rate}% годовых (Базовые условия)<br>
+          <strong>Одобренная сумма:</strong> ${window.fmtMoney(app.decision.approved_amount)} ₽<br>
+          <strong>Ставка:</strong> ${app.decision.approved_rate}% годовых<br>
           <strong>Ежемесячный платеж:</strong> ${window.fmtMoney(app.decision.monthly_payment)} ₽<br>
           <strong>Комиссия за выдачу:</strong> ${app.decision.issuance_fee_percent}%<br>
+
+          <button class="btn-primary" style="width: 100%; margin-top: 20px; background-color: var(--color-orange);"
+                  onclick="acceptOffer(${app.id}, ${app.decision.approved_amount})">
+            Принять предложение
+          </button>
+
           <div style="margin-top: 10px; font-size: 13px; color: #62657A;">${app.decision.reason_text}</div>
+        `;
+      } else if (app.status === 'DOCS_SIGNING') {
+        setBadge(0, 'success'); setBadge(1, 'success'); setBadge(2, 'success');
+        title.textContent = 'Документы готовятся';
+        title.style.color = 'var(--color-success)';
+        text.innerHTML = `
+          <div style="margin-bottom: 10px; font-size: 16px; color: var(--color-text-main);">
+            <strong>Статус:</strong> Подписание документов
+          </div>
+          <p>Вы приняли встречное предложение на сумму <strong>${window.fmtMoney(app.decision.approved_amount)} ₽</strong>.</p>
+          <p>Кредитный специалист свяжется с вами для завершения сделки.</p>
         `;
       } else if (app.status === 'MANUAL_REVIEW') {
         setBadge(0, 'success'); setBadge(1, 'success'); setBadge(2, 'success');
@@ -759,10 +786,41 @@
         if (isStop) { setBadge(0, 'fail'); } else { setBadge(0, 'success'); setBadge(1, 'success'); setBadge(2, 'fail'); }
         title.textContent = 'В кредите отказано';
         title.style.color = 'var(--color-primary)';
-        text.textContent = app.decision ? app.decision.reason_text : 'К сожалению, заявка отклонена.';
+        text.innerHTML = `
+          ${app.decision && app.decision.reason_text.includes('Скоринг') ? `<strong>Ваш балл:</strong> ${score}/100<br><br>` : ''}
+          ${app.decision ? app.decision.reason_text : 'К сожалению, заявка отклонена.'}
+        `;
       }
       document.getElementById('result-box').style.display = 'block';
     }
+
+    window.acceptOffer = async function(appId, amount) {
+      if (!confirm(`Вы уверены, что хотите принять предложение на сумму ${window.fmtMoney(amount)} ₽?`)) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/applications/${appId}/accept-offer`, {
+          method: 'POST'
+        });
+
+        if (res.ok) {
+          // Меняем экран на статус подписания
+          document.getElementById('result-title').textContent = 'Отлично! Заявка принята';
+          document.getElementById('result-title').style.color = 'var(--color-success)';
+          document.getElementById('result-text').innerHTML = `
+            <p>Вы приняли предложение на сумму <strong>${window.fmtMoney(amount)} ₽</strong>.</p>
+            <p>Наш менеджер уже готовит кредитные документы. Ожидайте звонка или сообщения в личном кабинете.</p>
+            <div style="margin-top: 15px; padding: 10px; background: #E8F5E9; color: #2E7D32; border-radius: 8px; font-weight: bold;">
+              Статус изменен на: DOCS_SIGNING
+            </div>
+          `;
+        } else {
+          const err = await res.json();
+          alert("Ошибка: " + (err.detail || "Не удалось принять предложение"));
+        }
+      } catch (e) {
+        alert("Ошибка связи с сервером.");
+      }
+    };
 
     window.checkStatus = async function() {
       const inn = localStorage.getItem(KEY);

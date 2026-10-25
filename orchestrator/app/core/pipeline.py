@@ -54,19 +54,18 @@ def update_status(db: Session, app: models.Application, new_status: str, step_na
 
 
 def calculate_loan_terms(score: int, requested_amount: float, term_months: int) -> dict:
-    """Risk-Based Pricing по реальным тарифам Альфа-Банка"""
-    if score >= 80:
-        rate = 14.0  # Ставка со скидкой (премиум)
-        penalty = 0.1  # Пени 0.1% в день
-        fee = 0.0  # Без комиссии
-        amount = requested_amount
+    """Глубокая дифференциация (Risk-Based Pricing)"""
+
+    if score >= 90:
+        rate, penalty, fee, amount, tier = 14.0, 0.1, 0.0, requested_amount, "A+ (Премиум)"
+    elif score >= 80:
+        rate, penalty, fee, amount, tier = 17.5, 0.1, 0.0, requested_amount, "A (Стандарт+)"
+    elif score >= 70:
+        rate, penalty, fee, amount, tier = 21.0, 0.3, 0.0, requested_amount, "B (Базовый)"
     elif score >= 60:
-        rate = 23.5  # Базовая ставка
-        penalty = 0.5  # Пени 0.5% в день
-        fee = 1.0  # Комиссия 1%
-        amount = requested_amount * 0.7  # Урезаем сумму на 30%
+        rate, penalty, fee, amount, tier = 23.5, 0.5, 1.0, requested_amount * 0.7, "C (Рискованный, 70% суммы)"
     else:
-        return {"rate": None, "penalty": None, "fee": None, "amount": 0, "payment": None}
+        return {"rate": None, "penalty": None, "fee": None, "amount": 0, "payment": None, "tier": "D (Отказ)"}
 
     # Расчет аннуитетного платежа
     monthly_rate = rate / 100 / 12
@@ -76,11 +75,8 @@ def calculate_loan_terms(score: int, requested_amount: float, term_months: int) 
         payment = amount / term_months
 
     return {
-        "rate": rate,
-        "penalty": penalty,
-        "fee": fee,
-        "amount": amount,
-        "payment": round(payment, 2)
+        "rate": rate, "penalty": penalty, "fee": fee,
+        "amount": amount, "payment": round(payment, 2), "tier": tier
     }
 
 
@@ -284,19 +280,28 @@ async def run_pipeline(application_id: int):
 
         logger.info(f"Заявка {app.id}: Итоговый балл = {score}")
 
-        # --- Матрица решений ---
+        # --- МАТРИЦА РЕШЕНИЙ ---
         if reject_reason:
             make_decision(db, app, "REJECTED", reject_reason, reason_code="STOP_FACTOR", score=0)
+
         elif score >= 80:
-            make_decision(db, app, "APPROVED", f"Кредит одобрен. Скоринг: {score}/100", amount=app.requested_amount,
-                          reason_code="APPROVED_BY_SCORING", score=score)
+            # A+ и A классы -> Одобрение (ставки 14% и 17.5%)
+            terms = calculate_loan_terms(score, app.requested_amount, app.requested_term_months)
+            make_decision(db, app, "APPROVED",
+                          f"Скоринг {score}/100. Грейд: {terms['tier']}",
+                          amount=app.requested_amount, reason_code="APPROVED_BY_SCORING", score=score)
+
         elif score >= 60:
+            # B и C классы -> Контроффер (ставки 21% и 23.5%, урезание суммы для C)
+            terms = calculate_loan_terms(score, app.requested_amount, app.requested_term_months)
             make_decision(db, app, "COUNTER_OFFER",
-                          f"Мы готовы профинансировать вас на 70% от суммы. Скоринг: {score}/100.",
+                          f"Скоринг {score}/100. Грейд: {terms['tier']}",
                           reason_code="REDUCED_AMOUNT", score=score)
+
         else:
-            make_decision(db, app, "REJECTED", f"Отказ. Скоринг: {score}/100. Высокая кредитная нагрузка.",
-                          reason_code="LOW_SCORE", score=0)
+            # D класс -> Отказ
+            make_decision(db, app, "REJECTED", f"Отказ. Скоринг {score}/100. Высокий риск.", reason_code="LOW_SCORE",
+                          score=0)
 
     except Exception as e:
         logger.error(f"Ошибка в конвейере: {str(e)}")
